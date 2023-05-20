@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc --watch --project tsconfig.json"
+    "start": "tsc --watch --project tsconfig.json",
+    "build": "tsc && npx webpack --config webpack.config.js"
   },
   "author": "lwk",
   "license": "ISC",

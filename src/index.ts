@@ -1,6 +1,6 @@
 import { IVElement, VElement, VNode, render } from "./vdom/VNode";
 
-let vnode1: VNode = VElement.create("div", {class: "DIV1", style: {color: "red"}})
+let vnode1: VNode = VElement.create("div", {class: "DIV222", style: {color: "red"}})
 vnode1.addChildElementNode("div", {}).addChildTextNode("这是文本节点")
 vnode1.addChildElementNode("div", {}).addChildTextNode("这是文本节点")
 vnode1.addChildElementNode("div", {}).addChildTextNode("这是文本节点")
