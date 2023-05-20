@@ -15,6 +15,14 @@ export interface IVNode {
      * 获取父节点
      */
     getParentNode(): IVElement | null;
+    /**
+     * 获取 Key
+     */
+    // getKey(): Number;
+    /**
+     * 设置 Key
+     */
+    // setKey(key: number): void;
 }
 
 
@@ -43,13 +51,13 @@ export interface IVElement extends IVNode {
      * @param name 子节点标签名
      * @param props 子节点属性
      */
-    addChildElementNode(name: string, props: Record<string, any>): void;
+    addChildElementNode(name: string, props: Record<string, any>): VElement;
     
     /**
      * 向虚拟 DOM 文本节点中创建并添加子节点到数组 childNodes 中，
      * @param text 文本内容
      */
-    addChildTextNode(text: string): void;
+    addChildTextNode(text: string): VTextNode;
 }
 
 /**
@@ -97,15 +105,17 @@ export class VElement implements IVElement {
 
     addChildElementNode(
         name: string, 
-        props: Record<string, any>): void {
+        props: Record<string, any>): VElement {
         let newChildNode: VElement = VElement.create(name, props);
         newChildNode.parentNode = this;
         this.childNodes.push(newChildNode);
+        return newChildNode;
     }
 
-    addChildTextNode(text: string): void {
+    addChildTextNode(text: string): VTextNode {
         let newTextNode: VNode = VTextNode.create(text, this);
         this.childNodes.push(newTextNode);
+        return newTextNode;
     }
     
     getTagName(): string {
@@ -149,4 +159,63 @@ export class VTextNode implements IVNode {
     getParentNode(): IVElement | null {
         return this.parentNode;
     }
+}
+
+/**
+ * 将虚拟节点渲染到真实 DOM 元素上
+ * @param vnode 需要渲染的虚拟节点
+ * @param target 渲染目标
+ * @returns 渲染得到的真实 DOM 节点
+ */
+export function render(vnode: IVNode, target: HTMLElement): Node {
+    // 清空目标元素的内容
+    // target.innerHTML = '';
+
+    if (vnode instanceof VTextNode) {
+        // 虚拟文本节点
+        let vTextNode: VTextNode = vnode as VTextNode;
+        let textNode: Text = document.createTextNode(vTextNode.text);
+        target.appendChild(textNode);
+        return textNode;
+    }
+    else if (vnode instanceof VElement) {
+        // 虚拟元素节点
+        let vElement: VElement = vnode as VElement;
+        let element = document.createElement(vElement.getTagName());
+        renderProps(element, vElement.getTagProps());
+        target.appendChild(element);
+
+        for(let childNode of vElement.childNodes) {
+            render(childNode, element);
+        }
+
+        return element
+    }
+    throw new Error('unknown node type');
+}
+
+function renderProps(element: HTMLElement, props: any): Node {
+    for (const key in props) {
+        if (Object.prototype.hasOwnProperty.call(props, key)) {
+            if (key === 'style') {
+                renderStyles(element, props[key]);
+            }
+            else if (props[key] instanceof Object) {
+                element.setAttribute(key, JSON.stringify(props[key]));
+            }
+            else {
+                element.setAttribute(key, props[key]);
+            }
+        }
+    }
+    return element;
+}
+
+function renderStyles(element: HTMLElement, styles: any): Node {
+    for (const key in styles) {
+        if (Object.prototype.hasOwnProperty.call(styles, key)) {
+            element.style.setProperty(key, styles[key]);
+        }
+    }
+    return element;
 }
