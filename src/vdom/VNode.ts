@@ -1,8 +1,11 @@
+import { KeyCounter, KeyType } from "./util/KeyUtil";
+let keyCounter = new KeyCounter();
+
 /**
  * 虚拟节点
  */
 type VNode = 
-    | IVElement     // 虚拟 DOM 元素节点
+    | IVElementNode     // 虚拟 DOM 元素节点
     | VTextNode     // 文本节点
 
 export {VNode};
@@ -14,16 +17,12 @@ export interface IVNode {
     /**
      * 获取父虚拟节点
      */
-    getParentVNode(): IVElement | null;
+    getParentVNode(): IVElementNode | null;
     /**
      * 获取 Key
      */
-    // getKey(): Number;
-    /**
-     * 设置 Key
-     */
-    // setKey(key: number): void;
-    
+    getKey(): KeyType;
+
     /**
      * 获取渲染后的真实 DOM 节点，若未渲染则返回 null
      */
@@ -33,7 +32,7 @@ export interface IVNode {
 /**
  * 虚拟 DOM 元素接口
  */
-export interface IVElement extends IVNode {
+export interface IVElementNode extends IVNode {
     /**
      * 获取节点的标签名称
      */
@@ -55,7 +54,7 @@ export interface IVElement extends IVNode {
      * @param name 子节点标签名
      * @param props 子节点属性
      */
-    addChildElementNode(name: string, props: Record<string, any>): VElement;
+    addChildElementNode(name: string, props: Record<string, any>): VElementNode;
     
     /**
      * 向虚拟 DOM 文本节点中创建并添加子节点到数组 childNodes 中，
@@ -67,12 +66,13 @@ export interface IVElement extends IVNode {
 /**
  * 虚拟 DOM 元素类
  */
-export class VElement implements IVElement {
-    name: string;
-    props: Record<string, any>;
-    childNodes: VNode[];
-    parentNode: IVElement | null;
+export class VElementNode implements IVElementNode {
+    private name: string;
+    private props: Record<string, any>;
+    private childNodes: VNode[];
+    private parentNode: IVElementNode | null;
     node: Node | null;
+    private key: KeyType = keyCounter.next();
 
     protected constructor(
         name: string, 
@@ -81,8 +81,8 @@ export class VElement implements IVElement {
     protected constructor(
         name: string, 
         props: Record<string, any>,
-        parentNode?: IVElement | null,
-        childNodes?: IVElement[]) {
+        parentNode?: IVElementNode | null,
+        childNodes?: IVElementNode[]) {
         this.name = name;
         this.props = props;
         this.parentNode = parentNode == undefined 
@@ -102,11 +102,15 @@ export class VElement implements IVElement {
      */
     static create(
         name: string, 
-        props: Record<string, any>): VElement {
-        let newVNode: VElement = new VElement(name, props)
+        props: Record<string, any>): VElementNode {
+        let newVNode: VElementNode = new VElementNode(name, props)
         newVNode.parentNode = null 
         newVNode.childNodes = []
         return newVNode;
+    }
+
+    getKey(): KeyType {
+        return this.key;
     }
 
     getNode(): Node | null {
@@ -115,8 +119,8 @@ export class VElement implements IVElement {
 
     addChildElementNode(
         name: string, 
-        props: Record<string, any>): VElement {
-        let newChildNode: VElement = VElement.create(name, props);
+        props: Record<string, any>): VElementNode {
+        let newChildNode: VElementNode = VElementNode.create(name, props);
         newChildNode.parentNode = this;
         this.childNodes.push(newChildNode);
         return newChildNode;
@@ -141,7 +145,7 @@ export class VElement implements IVElement {
         return this.childNodes.slice();
     }
 
-    getParentVNode(): IVElement | null {
+    getParentVNode(): IVElementNode | null {
         return this.parentNode;
     }
 }
@@ -150,14 +154,19 @@ export class VElement implements IVElement {
  * 虚拟文本节点
  */
 export class VTextNode implements IVNode {
-    text: string;
-    parentNode: VElement | null;
+    private text: string;
+    private parentNode: VElementNode | null;
     node: Node | null;
+    private key: KeyType = keyCounter.next();
 
-    private constructor(text: string, parentNode: VElement) {
+    private constructor(text: string, parentNode: VElementNode) {
         this.text = text;
         this.parentNode = parentNode;
         this.node = null;
+    }
+
+    getKey(): KeyType {
+        return this.key;
     }
 
     getNode(): Node | null {
@@ -168,78 +177,12 @@ export class VTextNode implements IVNode {
         return this.text;
     }
 
-    static create(text: string, parentNode: VElement): VTextNode {
+    static create(text: string, parentNode: VElementNode): VTextNode {
         return new VTextNode(text, parentNode);
     }
 
-    getParentVNode(): IVElement | null {
+    getParentVNode(): IVElementNode | null {
         return this.parentNode;
     }
 }
 
-/**
- * 将虚拟节点渲染到真实 DOM 元素上
- * @param vnode 需要渲染的虚拟节点
- * @param target 渲染目标
- * @returns 渲染得到的真实 DOM 节点
- */
-export function renderTo(vnode: IVNode, target: HTMLElement): Node {
-    return target.appendChild(render(vnode));
-}
-
-/**
- * 将虚拟节点渲染为真实 DOM 元素
- * @param vnode 需要渲染的虚拟节点
- * @returns 渲染得到的真实 DOM 节点
- */
-export function render(vnode: IVNode): Node {
-    if (vnode instanceof VTextNode) {
-        // 虚拟文本节点
-        let vTextNode: VTextNode = vnode as VTextNode;
-        let textNode: Text = document.createTextNode(vTextNode.text);
-        vTextNode.node = textNode;
-        return textNode;
-    }
-    else if (vnode instanceof VElement) {
-        // 虚拟元素节点
-        let vElement: VElement = vnode as VElement;
-        let element = document.createElement(vElement.getTagName());
-        renderProps(element, vElement.getTagProps());
-
-        vElement
-            .childNodes
-            .map(childNode => render(childNode))
-            .forEach(node => element.appendChild(node))
-
-
-        vElement.node = element;
-        return element
-    }
-    throw new Error('unknown node type');
-}
-
-function renderProps(element: HTMLElement, props: any): Node {
-    for (const key in props) {
-        if (Object.prototype.hasOwnProperty.call(props, key)) {
-            if (key === 'style') {
-                renderStyles(element, props[key]);
-            }
-            else if (props[key] instanceof Object) {
-                element.setAttribute(key, JSON.stringify(props[key]));
-            }
-            else {
-                element.setAttribute(key, props[key]);
-            }
-        }
-    }
-    return element;
-}
-
-function renderStyles(element: HTMLElement, styles: any): Node {
-    for (const key in styles) {
-        if (Object.prototype.hasOwnProperty.call(styles, key)) {
-            element.style.setProperty(key, styles[key]);
-        }
-    }
-    return element;
-}

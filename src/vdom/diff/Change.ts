@@ -1,10 +1,11 @@
-import { IVNode, render, renderTo } from "../VNode";
+import { render, renderProps } from "../Render";
+import { IVNode } from "../VNode";
 
 /**
  * 变化接口
  * 用于记录对象和值的变化
  */
-interface IChange {
+export interface IChange {
     /**
      * 添加新的变化并返回，该操作不会修改自身
      * @param change 新增的变化
@@ -13,9 +14,9 @@ interface IChange {
     // addChange(change: IChange): IChange;
 
     /**
-     * 获取目标真实 DOM 节点
+     * 获取目标对象
      */
-    getTargetNode(): Node;
+    getTarget(): Node;
 
     /**
      * 执行变化，修改真实 DOM
@@ -27,13 +28,13 @@ interface IChange {
  * 无变化
  */
 export class NoChange implements IChange {
-    targetNode: Node;
-    constructor(targetNode: Node) {
-        this.targetNode = targetNode;
+    private target: any;
+    constructor(target: any) {
+        this.target = target;
     }
 
-    getTargetNode(): Node {
-        return this.targetNode;
+    getTarget(): any {
+        return this.target;
     }
 
     apply(): boolean {
@@ -45,13 +46,13 @@ export class NoChange implements IChange {
  * 节点替换
  */
 export class ReplaceNodeChange implements IChange {
-    targetNode: Node;
-    newNode: Node;
+    private targetNode: Node;
+    private newNode: Node;
     constructor(targetNode: Node, newNode: Node) {
         this.targetNode = targetNode;
         this.newNode = newNode;
     }
-    getTargetNode(): Node {
+    getTarget(): Node {
         return this.targetNode;
     }
     apply(): boolean {
@@ -67,15 +68,15 @@ export class ReplaceNodeChange implements IChange {
  * 向最后添加一个子节点
  */
 export class AppendChildNodeChange implements IChange {
-    targetNode: Node;
-    newChildNode: IVNode;
+    private targetNode: Node;
+    private newChildNode: IVNode;
 
     constructor(targetNode: Node, newChildNode: IVNode) {
         this.targetNode = targetNode;
         this.newChildNode = newChildNode;
     }
 
-    getTargetNode(): Node {
+    getTarget(): Node {
         return this.targetNode;
     }
     apply(): boolean {
@@ -89,12 +90,12 @@ export class AppendChildNodeChange implements IChange {
  * 移除最后一个子节点
  */
 export class RemoveLastChildNodeChange implements IChange {
-    targetNode: HTMLElement;
+    private targetNode: HTMLElement;
     constructor(targetNode: HTMLElement) {
         this.targetNode = targetNode;
     }
 
-    getTargetNode(): Node {
+    getTarget(): Node {
         return this.targetNode;
     }
     
@@ -113,12 +114,12 @@ export class RemoveLastChildNodeChange implements IChange {
  * 移除第一个子节点
  */
 export class RemoveFirstChildNodeChange implements IChange {
-    targetNode: HTMLElement;
+    private targetNode: HTMLElement;
     constructor(targetNode: HTMLElement) {
         this.targetNode = targetNode;
     }
 
-    getTargetNode(): Node {
+    getTarget(): Node {
         return this.targetNode;
     }
 
@@ -133,7 +134,46 @@ export class RemoveFirstChildNodeChange implements IChange {
 }
 
 
+//////////////////////////
 
-export {
-    IChange,
+/**
+ * 向目标对象添加属性
+ */
+export class AddAttributeChange implements IChange {
+    private targetNode: HTMLElement;
+    private key: string;
+    private value: any;
+    constructor(target: HTMLElement, key: string, value: any) {
+        this.targetNode = target;
+        this.key = key;
+        this.value = value;
+    }
+
+    getTarget() {
+        return this.targetNode;
+    }
+    apply(): boolean {
+        renderProps(this.targetNode, { [this.key]: this.value });
+        return true;
+    }
+}
+
+/**
+ * 向目标对象删除属性
+ */
+export class DeleteAttributeChange implements IChange {
+    private targetNode: HTMLElement;
+    private key: string;
+    constructor(target: HTMLElement, key: string) {
+        this.targetNode = target;
+        this.key = key;
+    }
+
+    getTarget() {
+        return this.targetNode;
+    }
+    apply(): boolean {
+        this.targetNode.removeAttribute(this.key)
+        return true;
+    }
 }

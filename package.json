@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc --watch --project tsconfig.json",
-    "build": "tsc && npx webpack --config webpack.config.js"
+    "build": "tsc && npx webpack --config webpack.config.js",
+    "test": "node ./test/indexTest.ts"
   },
   "author": "lwk",
   "license": "ISC",
