@@ -12,9 +12,9 @@ export {VNode};
  */
 export interface IVNode {
     /**
-     * 获取父节点
+     * 获取父虚拟节点
      */
-    getParentNode(): IVElement | null;
+    getParentVNode(): IVElement | null;
     /**
      * 获取 Key
      */
@@ -23,8 +23,12 @@ export interface IVNode {
      * 设置 Key
      */
     // setKey(key: number): void;
+    
+    /**
+     * 获取渲染后的真实 DOM 节点，若未渲染则返回 null
+     */
+    getNode(): Node | null;
 }
-
 
 /**
  * 虚拟 DOM 元素接口
@@ -43,7 +47,7 @@ export interface IVElement extends IVNode {
     /**
      * 获取子节点数组
      */
-    getChildNodes(): VNode[];
+    getChildVNodes(): VNode[];
     
     /**
      * 向虚拟 DOM 元素中创建并添加子节点到数组 childNodes 中，
@@ -68,6 +72,7 @@ export class VElement implements IVElement {
     props: Record<string, any>;
     childNodes: VNode[];
     parentNode: IVElement | null;
+    node: Node | null;
 
     protected constructor(
         name: string, 
@@ -86,6 +91,7 @@ export class VElement implements IVElement {
         this.childNodes = childNodes == undefined 
                             ? []
                             : childNodes;
+        this.node = null;
     }
 
     /**
@@ -101,6 +107,10 @@ export class VElement implements IVElement {
         newVNode.parentNode = null 
         newVNode.childNodes = []
         return newVNode;
+    }
+
+    getNode(): Node | null {
+        return this.node;
     }
 
     addChildElementNode(
@@ -126,12 +136,12 @@ export class VElement implements IVElement {
         return this.props;
     }
     
-    getChildNodes(): VNode[] {
+    getChildVNodes(): VNode[] {
         // 返回子节点数组的副本，防止在外部修改数组
         return this.childNodes.slice();
     }
 
-    getParentNode(): IVElement | null {
+    getParentVNode(): IVElement | null {
         return this.parentNode;
     }
 }
@@ -142,10 +152,16 @@ export class VElement implements IVElement {
 export class VTextNode implements IVNode {
     text: string;
     parentNode: VElement | null;
+    node: Node | null;
 
     private constructor(text: string, parentNode: VElement) {
         this.text = text;
         this.parentNode = parentNode;
+        this.node = null;
+    }
+
+    getNode(): Node | null {
+        return this.node;
     }
     
     getText(): string {
@@ -156,7 +172,7 @@ export class VTextNode implements IVNode {
         return new VTextNode(text, parentNode);
     }
 
-    getParentNode(): IVElement | null {
+    getParentVNode(): IVElement | null {
         return this.parentNode;
     }
 }
@@ -167,15 +183,21 @@ export class VTextNode implements IVNode {
  * @param target 渲染目标
  * @returns 渲染得到的真实 DOM 节点
  */
-export function render(vnode: IVNode, target: HTMLElement): Node {
-    // 清空目标元素的内容
-    // target.innerHTML = '';
+export function renderTo(vnode: IVNode, target: HTMLElement): Node {
+    return target.appendChild(render(vnode));
+}
 
+/**
+ * 将虚拟节点渲染为真实 DOM 元素
+ * @param vnode 需要渲染的虚拟节点
+ * @returns 渲染得到的真实 DOM 节点
+ */
+export function render(vnode: IVNode): Node {
     if (vnode instanceof VTextNode) {
         // 虚拟文本节点
         let vTextNode: VTextNode = vnode as VTextNode;
         let textNode: Text = document.createTextNode(vTextNode.text);
-        target.appendChild(textNode);
+        vTextNode.node = textNode;
         return textNode;
     }
     else if (vnode instanceof VElement) {
@@ -183,12 +205,14 @@ export function render(vnode: IVNode, target: HTMLElement): Node {
         let vElement: VElement = vnode as VElement;
         let element = document.createElement(vElement.getTagName());
         renderProps(element, vElement.getTagProps());
-        target.appendChild(element);
 
-        for(let childNode of vElement.childNodes) {
-            render(childNode, element);
-        }
+        vElement
+            .childNodes
+            .map(childNode => render(childNode))
+            .forEach(node => element.appendChild(node))
 
+
+        vElement.node = element;
         return element
     }
     throw new Error('unknown node type');

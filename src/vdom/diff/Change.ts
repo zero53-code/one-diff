@@ -1,3 +1,5 @@
+import { IVNode, render, renderTo } from "../VNode";
+
 /**
  * 变化接口
  * 用于记录对象和值的变化
@@ -8,51 +10,130 @@ interface IChange {
      * @param change 新增的变化
      * @returns 新增后的变化
      */
-    addChange(change: IChange): IChange;
+    // addChange(change: IChange): IChange;
+
+    /**
+     * 获取目标真实 DOM 节点
+     */
+    getTargetNode(): Node;
+
+    /**
+     * 执行变化，修改真实 DOM
+     */
+    apply(): boolean;
 }
 
 /**
- * 通用变化类
+ * 无变化
  */
-class Change implements IChange {
-    change: IChange | null;
-    constructor(change?: IChange) {
-        this.change = change == undefined ? null : change;
+export class NoChange implements IChange {
+    targetNode: Node;
+    constructor(targetNode: Node) {
+        this.targetNode = targetNode;
     }
 
-    addChange(change: IChange): IChange {
-        if (this.change == null) {
-            return new Change(change);
-        } else {
-            return this.change.addChange(change);
+    getTargetNode(): Node {
+        return this.targetNode;
+    }
+
+    apply(): boolean {
+        return true;
+    }
+}
+
+/**
+ * 节点替换
+ */
+export class ReplaceNodeChange implements IChange {
+    targetNode: Node;
+    newNode: Node;
+    constructor(targetNode: Node, newNode: Node) {
+        this.targetNode = targetNode;
+        this.newNode = newNode;
+    }
+    getTargetNode(): Node {
+        return this.targetNode;
+    }
+    apply(): boolean {
+        if (this.targetNode.parentNode != null) {
+            this.targetNode.parentNode.replaceChild(this.newNode, this.targetNode);
+            return true;
         }
+        return false;
+    }
+}
+
+/**
+ * 向最后添加一个子节点
+ */
+export class AppendChildNodeChange implements IChange {
+    targetNode: Node;
+    newChildNode: IVNode;
+
+    constructor(targetNode: Node, newChildNode: IVNode) {
+        this.targetNode = targetNode;
+        this.newChildNode = newChildNode;
+    }
+
+    getTargetNode(): Node {
+        return this.targetNode;
+    }
+    apply(): boolean {
+        this.targetNode.appendChild(render(this.newChildNode));
+        return true;
     }
 
 }
 
 /**
- * 没有变化
+ * 移除最后一个子节点
  */
-class NoChange implements IChange {
-    addChange(change: IChange): IChange {
-        return change;
+export class RemoveLastChildNodeChange implements IChange {
+    targetNode: HTMLElement;
+    constructor(targetNode: HTMLElement) {
+        this.targetNode = targetNode;
     }
 
-}
-
-class ValueChange implements IChange {
-    from: any;
-    to: any;
+    getTargetNode(): Node {
+        return this.targetNode;
+    }
     
+    apply(): boolean {
+        if (this.targetNode.lastChild != null) {
+            this.targetNode.removeChild(this.targetNode.lastChild)
+            return true;
+        }
+        
+        return false;
+    }
+        
+}
 
-    addChange(change: IChange): IChange {
-        throw new Error("Method not implemented.");
+/**
+ * 移除第一个子节点
+ */
+export class RemoveFirstChildNodeChange implements IChange {
+    targetNode: HTMLElement;
+    constructor(targetNode: HTMLElement) {
+        this.targetNode = targetNode;
+    }
+
+    getTargetNode(): Node {
+        return this.targetNode;
+    }
+
+    apply(): boolean {
+        if (this.targetNode.firstChild != null) {
+            this.targetNode.removeChild(this.targetNode.firstChild)
+            return true;
+        }
+        
+        return false;
     }
 }
+
 
 
 export {
     IChange,
-    Change,
-    NoChange
 }
