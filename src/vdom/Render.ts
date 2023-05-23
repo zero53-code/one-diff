@@ -30,7 +30,7 @@ export function render(vnode: IVNode): Node {
         renderProps(element, vElement.getTagProps());
 
         vElement
-            .getChildVNodes()
+            .getChildren()
             .map(childNode => render(childNode))
             .forEach(node => element.appendChild(node))
 

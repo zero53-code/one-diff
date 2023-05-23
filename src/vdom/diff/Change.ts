@@ -47,8 +47,8 @@ export class NoChange implements IChange {
  */
 export class ReplaceNodeChange implements IChange {
     private targetNode: Node;
-    private newNode: Node;
-    constructor(targetNode: Node, newNode: Node) {
+    private newNode: IVNode;
+    constructor(targetNode: Node, newNode: IVNode) {
         this.targetNode = targetNode;
         this.newNode = newNode;
     }
@@ -57,12 +57,37 @@ export class ReplaceNodeChange implements IChange {
     }
     apply(): boolean {
         if (this.targetNode.parentNode != null) {
-            this.targetNode.parentNode.replaceChild(this.newNode, this.targetNode);
+            this.targetNode.parentNode.replaceChild(
+                render(this.newNode), 
+                this.targetNode);
             return true;
         }
         return false;
     }
 }
+
+/**
+ * 文本节点的文本替换
+ */
+export class ReplaceTextChange implements IChange {
+    target: Text;
+    text: string;
+    constructor(target: Text, text: string) {
+        this.target = target;
+        this.text = text;
+    }
+
+
+    getTarget(): Text {
+        return this.target;
+    }
+    apply(): boolean {
+        this.target.nodeValue = this.text;
+        return true;
+    }
+
+}
+
 
 /**
  * 向最后添加一个子节点
@@ -137,9 +162,9 @@ export class RemoveFirstChildNodeChange implements IChange {
 //////////////////////////
 
 /**
- * 向目标对象添加属性
+ * 向目标元素添加或修改属性
  */
-export class AddAttributeChange implements IChange {
+export class SetAttributeChange implements IChange {
     private targetNode: HTMLElement;
     private key: string;
     private value: any;
@@ -159,7 +184,7 @@ export class AddAttributeChange implements IChange {
 }
 
 /**
- * 向目标对象删除属性
+ * 向目标元素删除属性
  */
 export class DeleteAttributeChange implements IChange {
     private targetNode: HTMLElement;
