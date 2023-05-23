@@ -2,13 +2,16 @@ import { IVNode, VElementNode, VTextNode } from "../VNode";
 import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange } from "./Change";
 
 export function sameVNode(a: IVNode, b: IVNode): boolean {
-    return a === b 
-        || a.getKey() === b.getKey() 
+    return a.getKey() === b.getKey() 
         || (
             a instanceof VElementNode 
             && b instanceof VElementNode 
             && a.getTagName() === b.getTagName()
-            );
+        )
+        || (
+            a instanceof VTextNode
+            && b instanceof VTextNode
+        );
 }
 
 
@@ -17,7 +20,7 @@ export function* diff(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
         return;
     }
     
-    if (sameVNode(newNode, oldNode)) {
+    if (typeof newNode !== typeof oldNode) {
         yield new ReplaceNodeChange(oldNode.getNode() as Node, newNode);
         return;
     }
