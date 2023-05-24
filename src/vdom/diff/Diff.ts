@@ -2,31 +2,29 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VTextNode } from "../VNode";
-import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange } from "./Change";
-import { sameVNode } from "./SameVNode";
+import { IVNode, VElementNode, VTextNode } from "../VNode"
+import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange } from "./Change"
+import { sameVNode } from "./SameVNode"
 
 
 export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
-    if (newNode === oldNode || newNode.getKey() === oldNode.getKey()) {
-        return;
-    }
-    
-    if (typeof newNode !== typeof oldNode) {
-        yield new ReplaceNodeChange(oldNode.getNode() as Node, newNode);
-        return;
+    if (!sameVNode(newNode, oldNode)) {
+        yield new ReplaceNodeChange(oldNode.getNode() as Node, newNode)
+        return
     }
 
     if (newNode instanceof VTextNode && oldNode instanceof VTextNode) {
         yield* textNodePatch(newNode, oldNode)
-        return;
+        return
     }
     
     if (newNode instanceof VElementNode && oldNode instanceof VElementNode) {
-
+        yield* propsPatch(newNode, oldNode)
+        yield* childNodePatch(newNode, oldNode)
+        return
     }
 
-    throw new Error("not implemented");
+    throw new Error("not implemented")
 }
 
 /**
@@ -39,30 +37,30 @@ export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
  * @author linwukang
  */
 export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
-    let oldNode = oldVNode.getNode() as HTMLElement;
+    let oldNode = oldVNode.getNode() as HTMLElement
 
-    let newProps = newVNode.getTagProps();
-    let oldProps = oldVNode.getTagProps();
+    let newProps = newVNode.getTagProps()
+    let oldProps = oldVNode.getTagProps()
     
     for (const key in newProps) {
         if (oldProps.hasOwnProperty(key)) {
             // 新的 props 有，旧的 props 也有的属性 key
-            let newValue: any = newProps[key];
-            let oldValue: any = oldProps[key];
+            let newValue: any = newProps[key]
+            let oldValue: any = oldProps[key]
             if (typeof newValue !== typeof oldValue) {
-                yield new SetAttributeChange(oldNode, key, newValue);
+                yield new SetAttributeChange(oldNode, key, newValue)
             }
             else if (newValue === oldValue) {
                 // 不发生 Change 
-                // yield new NoChange(oldProps);
+                // yield new NoChange(oldProps)
             }
             else {
-                yield new SetAttributeChange(oldNode, key, newValue);
+                yield new SetAttributeChange(oldNode, key, newValue)
             }
         }
         else {
             // 新的 props 有，旧的 props 没有的属性 key
-            yield new SetAttributeChange(oldNode, key, newProps[key]);
+            yield new SetAttributeChange(oldNode, key, newProps[key])
         }
     }
 
@@ -70,11 +68,11 @@ export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Gen
         if (!newProps.hasOwnProperty(key)) {
             // 旧的 props 有，新的 props 没有的属性 key
             // 删除操作
-            yield new DeleteAttributeChange(oldNode, key);
+            yield new DeleteAttributeChange(oldNode, key)
         }
     }
 
-    return;
+    return
 }
 
 /**
@@ -88,16 +86,16 @@ export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Gen
  */
 export function* textNodePatch(newTextVNode: VTextNode, oldTextVNode: VTextNode): Generator<IChange> {
     if (newTextVNode.getText() === oldTextVNode.getText()) {
-        return;
+        return
     }
     else {
-        yield new ReplaceTextChange(oldTextVNode.getNode() as Text, newTextVNode.getText());
-        return;
+        yield new ReplaceTextChange(oldTextVNode.getNode() as Text, newTextVNode.getText())
+        return
     }
 }
 
 export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
-    let newChildren = newVNode.getChildren();
-    let oldChildren = oldVNode.getChildren();
+    let newChildren = newVNode.getChildren()
+    let oldChildren = oldVNode.getChildren()
     
 }

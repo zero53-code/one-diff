@@ -2,7 +2,7 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VTextNode } from "../VNode";
+import { IVNode, VElementNode, VTextNode } from "../VNode"
 
 /**
  * 判断两个虚拟节点是否为同样的节点
@@ -27,5 +27,5 @@ export function sameVNode(vNode1: IVNode, vNode2: IVNode): boolean {
             ( vNode1 instanceof VTextNode
                 && vNode2 instanceof VTextNode
             )
-        );
+        )
 }

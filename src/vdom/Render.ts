@@ -2,7 +2,7 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VTextNode } from "./VNode";
+import { IVNode, VElementNode, VTextNode } from "./VNode"
 
 /**
  * 将虚拟节点渲染到真实 DOM 元素上
@@ -13,7 +13,7 @@ import { IVNode, VElementNode, VTextNode } from "./VNode";
  * @author linwukang
  */
 export function renderTo(vnode: IVNode, target: HTMLElement): Node {
-    return target.appendChild(render(vnode));
+    return target.appendChild(render(vnode))
 }
 
 /**
@@ -26,16 +26,16 @@ export function renderTo(vnode: IVNode, target: HTMLElement): Node {
 export function render(vnode: IVNode): Node {
     if (vnode instanceof VTextNode) {
         // 虚拟文本节点
-        let vTextNode: VTextNode = vnode as VTextNode;
-        let textNode: Text = document.createTextNode(vTextNode.getText());
-        vTextNode.node = textNode;
-        return textNode;
+        let vTextNode: VTextNode = vnode as VTextNode
+        let textNode: Text = document.createTextNode(vTextNode.getText())
+        vTextNode.node = textNode
+        return textNode
     }
     else if (vnode instanceof VElementNode) {
         // 虚拟元素节点
-        let vElement: VElementNode = vnode as VElementNode;
-        let element = document.createElement(vElement.getTagName());
-        renderProps(element, vElement.getTagProps());
+        let vElement: VElementNode = vnode as VElementNode
+        let element = document.createElement(vElement.getTagName())
+        renderProps(element, vElement.getTagProps())
 
         vElement
             .getChildren()
@@ -43,10 +43,10 @@ export function render(vnode: IVNode): Node {
             .forEach(node => element.appendChild(node))
 
 
-        vElement.node = element;
+        vElement.node = element
         return element
     }
-    throw new Error('unknown node type');
+    throw new Error('unknown node type')
 }
 
 /**
@@ -60,16 +60,16 @@ export function render(vnode: IVNode): Node {
 export function renderProps(element: HTMLElement, props: any): Node {
     for (const key in props) {
         if (key === 'style') {
-            renderStyles(element, props[key]);
+            renderStyles(element, props[key])
         }
         else if (props[key] instanceof Object) {
-            element.setAttribute(key, JSON.stringify(props[key]));
+            element.setAttribute(key, JSON.stringify(props[key]))
         }
         else {
-            element.setAttribute(key, props[key]);
+            element.setAttribute(key, props[key])
         }
     }
-    return element;
+    return element
 }
 
 /**
@@ -83,8 +83,8 @@ export function renderProps(element: HTMLElement, props: any): Node {
 export function renderStyles(element: HTMLElement, styles: any): Node {
     for (const key in styles) {
         if (Object.prototype.hasOwnProperty.call(styles, key)) {
-            element.style.setProperty(key, styles[key]);
+            element.style.setProperty(key, styles[key])
         }
     }
-    return element;
+    return element
 }
