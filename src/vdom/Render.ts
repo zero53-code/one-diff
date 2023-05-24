@@ -1,3 +1,7 @@
+/**
+ * @author linwukang
+ */
+
 import { IVNode, VElementNode, VTextNode } from "./VNode";
 
 /**
@@ -5,6 +9,8 @@ import { IVNode, VElementNode, VTextNode } from "./VNode";
  * @param vnode 需要渲染的虚拟节点
  * @param target 渲染目标
  * @returns 渲染得到的真实 DOM 节点
+ * 
+ * @author linwukang
  */
 export function renderTo(vnode: IVNode, target: HTMLElement): Node {
     return target.appendChild(render(vnode));
@@ -14,6 +20,8 @@ export function renderTo(vnode: IVNode, target: HTMLElement): Node {
  * 将虚拟节点渲染为真实 DOM 元素
  * @param vnode 需要渲染的虚拟节点
  * @returns 渲染得到的真实 DOM 节点
+ * 
+ * @author linwukang
  */
 export function render(vnode: IVNode): Node {
     if (vnode instanceof VTextNode) {
@@ -46,6 +54,8 @@ export function render(vnode: IVNode): Node {
  * @param element 真实 DOM 元素
  * @param props 需要渲染的属性
  * @returns 真实 DOM 节点
+ * 
+ * @author linwukang
  */
 export function renderProps(element: HTMLElement, props: any): Node {
     for (const key in props) {
@@ -67,6 +77,8 @@ export function renderProps(element: HTMLElement, props: any): Node {
  * @param element 真实 DOM 元素
  * @param styles 需要渲染的样式
  * @returns 真实 DOM 节点
+ * 
+ * @author linwukang
  */
 export function renderStyles(element: HTMLElement, styles: any): Node {
     for (const key in styles) {

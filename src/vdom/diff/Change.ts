@@ -1,9 +1,14 @@
+/**
+ * @author linwukang
+ */
 import { render, renderProps } from "../Render";
 import { IVNode } from "../VNode";
 
 /**
  * 变化接口
  * 用于记录对象和值的变化
+ * 
+ * @author linwukang
  */
 export interface IChange {
     /**
@@ -26,6 +31,8 @@ export interface IChange {
 
 /**
  * 无变化
+ * 
+ * @author linwukang
  */
 export class NoChange implements IChange {
     private target: any;
@@ -44,6 +51,8 @@ export class NoChange implements IChange {
 
 /**
  * 节点替换
+ * 
+ * @author linwukang
  */
 export class ReplaceNodeChange implements IChange {
     private targetNode: Node;
@@ -68,6 +77,8 @@ export class ReplaceNodeChange implements IChange {
 
 /**
  * 文本节点的文本替换
+ * 
+ * @author linwukang
  */
 export class ReplaceTextChange implements IChange {
     target: Text;
@@ -91,6 +102,8 @@ export class ReplaceTextChange implements IChange {
 
 /**
  * 向最后添加一个子节点
+ * 
+ * @author linwukang
  */
 export class AppendChildNodeChange implements IChange {
     private targetNode: Node;
@@ -113,6 +126,8 @@ export class AppendChildNodeChange implements IChange {
 
 /**
  * 移除最后一个子节点
+ * 
+ * @author linwukang
  */
 export class RemoveLastChildNodeChange implements IChange {
     private targetNode: HTMLElement;
@@ -137,6 +152,8 @@ export class RemoveLastChildNodeChange implements IChange {
 
 /**
  * 移除第一个子节点
+ * 
+ * @author linwukang
  */
 export class RemoveFirstChildNodeChange implements IChange {
     private targetNode: HTMLElement;
@@ -163,6 +180,8 @@ export class RemoveFirstChildNodeChange implements IChange {
 
 /**
  * 向目标元素添加或修改属性
+ * 
+ * @author linwukang
  */
 export class SetAttributeChange implements IChange {
     private targetNode: HTMLElement;
@@ -185,6 +204,8 @@ export class SetAttributeChange implements IChange {
 
 /**
  * 向目标元素删除属性
+ * 
+ * @author linwukang
  */
 export class DeleteAttributeChange implements IChange {
     private targetNode: HTMLElement;

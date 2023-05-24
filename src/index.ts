@@ -1,7 +1,7 @@
 import { renderTo } from "./vdom/Render";
 import { AbstractVElementNode, VElementNode, VNode, VTextNode } from "./vdom/VNode";
 import { IChange, RemoveFirstChildNodeChange, RemoveLastChildNodeChange } from "./vdom/diff/Change";
-import { propsDiff, textNodeDiff } from "./vdom/diff/Diff";
+import { propsPatch, textNodePatch } from "./vdom/diff/Diff";
 
 // 测试 `VNode`
 function testVNode() {
@@ -32,9 +32,9 @@ function testVNode() {
     console.log(change2.apply());
 }
 
-// 测试 `propsDiff`
-function testPropsDiff01() {
-    console.log("================测试 `propsDiff` 01================");
+// 测试 `propsPatch`
+function testPropsPatch01() {
+    console.log("================测试 `propsPatch` 01================");
     let vnode1 = VElementNode.create("div", 
         {
             class: "DIV1", 
@@ -60,7 +60,7 @@ function testPropsDiff01() {
 
     setTimeout(() => {
         console.log("================CHANGE================");
-        let changes = propsDiff(vnode2, vnode1);
+        let changes = propsPatch(vnode2, vnode1);
         for (const change of changes) {
             console.log(change);
             change.apply();
@@ -70,9 +70,9 @@ function testPropsDiff01() {
     
 }
 
-// 测试 `propsDiff`
-function testPropsDiff02() {
-    console.log("================测试 `propsDiff` 02================");
+// 测试 `propsPatch`
+function testPropsPatch02() {
+    console.log("================测试 `propsPatch` 02================");
     let props = {
         class: "DIV1", 
         style: {
@@ -113,10 +113,10 @@ function testPropsDiff02() {
 
         console.log("changedVNode: ", changedVNode);
 
-        let changes1 = propsDiff(changedVNode, vnode1);
-        let changes2 = propsDiff(changedVNode, vnode2);
-        let changes3 = propsDiff(changedVNode, vnode3);
-        let changes4 = propsDiff(changedVNode, vnode4);
+        let changes1 = propsPatch(changedVNode, vnode1);
+        let changes2 = propsPatch(changedVNode, vnode2);
+        let changes3 = propsPatch(changedVNode, vnode3);
+        let changes4 = propsPatch(changedVNode, vnode4);
         for (const change of changes1) {
             console.log(change);
             change.apply();
@@ -135,8 +135,8 @@ function testPropsDiff02() {
     
 }
 
-// 测试 `textNodeDiff`
-function testTextNodeDiff() {
+// 测试 `textNodePatch`
+function testTextNodePatch() {
     let node1 = VElementNode.create("div", {});
     let node2 = VElementNode.create("div", {});
     let textVNode1 = node1.addChildTextNode("Text Node 1");
@@ -145,7 +145,7 @@ function testTextNodeDiff() {
     renderTo(node1, document.getElementById("root1") as HTMLElement);
     renderTo(node2, document.getElementById("root2") as HTMLElement);
 
-    let changes = textNodeDiff(textVNode1, textVNode2);
+    let changes = textNodePatch(textVNode1, textVNode2);
     setTimeout(() => {
         for (const change of changes) {
             console.log(change);
@@ -154,4 +154,4 @@ function testTextNodeDiff() {
     }, 5000);
 }
 
-testPropsDiff02();
+testPropsPatch02();

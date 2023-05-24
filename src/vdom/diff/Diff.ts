@@ -1,21 +1,13 @@
+/**
+ * @author linwukang
+ */
+
 import { IVNode, VElementNode, VTextNode } from "../VNode";
 import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange } from "./Change";
-
-export function sameVNode(a: IVNode, b: IVNode): boolean {
-    return a.getKey() === b.getKey() 
-        || (
-            a instanceof VElementNode 
-            && b instanceof VElementNode 
-            && a.getTagName() === b.getTagName()
-        )
-        || (
-            a instanceof VTextNode
-            && b instanceof VTextNode
-        );
-}
+import { sameVNode } from "./SameVNode";
 
 
-export function* diff(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
+export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
     if (newNode === oldNode || newNode.getKey() === oldNode.getKey()) {
         return;
     }
@@ -26,7 +18,7 @@ export function* diff(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
     }
 
     if (newNode instanceof VTextNode && oldNode instanceof VTextNode) {
-        yield* textNodeDiff(newNode, oldNode)
+        yield* textNodePatch(newNode, oldNode)
         return;
     }
     
@@ -38,13 +30,15 @@ export function* diff(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
 }
 
 /**
- * 比较两个虚拟节点属性的变化，并返回 Change 的序列
- * Change 序列中的 Change 对象的目标是旧的虚拟节点所对应的真实 DOM 节点
+ * 比较两个虚拟节点属性的变化，并返回 {@link IChange} 的序列
+ * {@link IChange} 序列中的 {@link IChange} 对象的目标是旧的虚拟节点所对应的真实 DOM 节点
  * @param newVNode 新的虚拟节点
  * @param oldVNode 旧的虚拟节点。必须是已渲染的节点，即 `oldVNode.getNode()` 不为 `null`
- * @returns Change 序列
+ * @returns 序列 {@link Generator<IChange>}
+ * 
+ * @author linwukang
  */
-export function* propsDiff(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
+export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
     let oldNode = oldVNode.getNode() as HTMLElement;
 
     let newProps = newVNode.getTagProps();
@@ -84,13 +78,15 @@ export function* propsDiff(newVNode: VElementNode, oldVNode: VElementNode): Gene
 }
 
 /**
- * 比较两个虚拟文本节点的变化，并返回 Change 的序列
- * Change 序列中的 Change 对象的目标是旧的虚拟文本节点所对应的真实 DOM 节点
+ * 比较两个虚拟文本节点的变化，并返回 {@link IChange} 的序列
+ * {@link IChange} 序列中的 {@link IChange} 对象的目标是旧的虚拟文本节点所对应的真实 DOM 节点
  * @param newTextVNode 新的虚拟文本节点
  * @param oldTextVNode 旧的虚拟文本节点。必须是已渲染的节点，即 `oldTextVNode.getNode()` 不为 `null`
- * @returns Change 序列
+ * @returns 序列 {@link Generator<IChange>}
+ * 
+ * @author linwukang
  */
-export function* textNodeDiff(newTextVNode: VTextNode, oldTextVNode: VTextNode): Generator<IChange> {
+export function* textNodePatch(newTextVNode: VTextNode, oldTextVNode: VTextNode): Generator<IChange> {
     if (newTextVNode.getText() === oldTextVNode.getText()) {
         return;
     }
@@ -100,7 +96,7 @@ export function* textNodeDiff(newTextVNode: VTextNode, oldTextVNode: VTextNode):
     }
 }
 
-export function* childNodeDiff(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
+export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
     let newChildren = newVNode.getChildren();
     let oldChildren = oldVNode.getChildren();
     

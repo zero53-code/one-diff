@@ -1,8 +1,14 @@
+/**
+ * @author linwukang
+ */
+
 import { KeyCounter, KeyType } from "./util/KeyUtil";
 let keyCounter = new KeyCounter();
 
 /**
  * 虚拟节点
+ * 
+ * @author linwukang
  */
 type VNode = 
     | AbstractVElementNode     // 虚拟 DOM 元素节点
@@ -12,6 +18,8 @@ export {VNode};
 
 /**
  * 虚拟节点接口
+ * 
+ * @author linwukang
  */
 export interface IVNode {
     /**
@@ -37,6 +45,8 @@ export interface IVNode {
 /**
  * 抽象 DOM 虚拟节点
  * 定义了通用的属性和方法
+ * 
+ * @author linwukang
  */
 export abstract class AbstractVNode implements IVNode {
     /**
@@ -86,6 +96,8 @@ export abstract class AbstractVNode implements IVNode {
 
 /**
  * 虚拟 DOM 元素接口
+ * 
+ * @author linwukang
  */
 export abstract class AbstractVElementNode extends AbstractVNode {
     /**
@@ -114,12 +126,15 @@ export abstract class AbstractVElementNode extends AbstractVNode {
     /**
      * 向虚拟 DOM 文本节点中创建并添加子节点到数组 childNodes 中，
      * @param text 文本内容
+     * @returns 新的虚拟文本节点 {@link VTextNode}
      */
     public abstract addChildTextNode(text: string): VTextNode;
 }
 
 /**
  * 虚拟 DOM 元素类
+ * 
+ * @author linwukang
  */
 export class VElementNode extends AbstractVElementNode {
     private tagName: string;
@@ -190,6 +205,8 @@ export class VElementNode extends AbstractVElementNode {
 
 /**
  * 虚拟文本节点
+ * 
+ * @author linwukang
  */
 export class VTextNode extends AbstractVNode {
     private text: string;
