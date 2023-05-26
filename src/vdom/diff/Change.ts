@@ -2,7 +2,7 @@
  * @author linwukang
  */
 import { render, renderProps } from "../Render"
-import { IVNode } from "../VNode"
+import { IVNode, VElementNode } from "../VNode"
 
 /**
  * 变化接口
@@ -66,8 +66,10 @@ export class ReplaceNodeChange implements IChange {
     }
     apply(): boolean {
         if (this.targetNode.parentNode != null) {
+            let node = this.newNode.getNode()
+
             this.targetNode.parentNode.replaceChild(
-                render(this.newNode), 
+                node == null ? render(this.newNode) : node, 
                 this.targetNode)
             return true
         }
@@ -187,10 +189,16 @@ export class SetAttributeChange implements IChange {
     private targetNode: HTMLElement
     private key: string
     private value: any
-    constructor(target: HTMLElement, key: string, value: any) {
-        this.targetNode = target
-        this.key = key
-        this.value = value
+    constructor(target: VElementNode, key: string, value: any) {
+        let node = target.getNode()
+        if (node != null) {
+            this.targetNode = node
+            this.key = key
+            this.value = value
+        }
+        else {
+            throw new Error(target + "不是一个已被渲染的虚拟元素节点")
+        }
     }
 
     getTarget() {

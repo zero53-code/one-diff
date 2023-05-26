@@ -8,17 +8,22 @@ import { sameVNode } from "./SameVNode"
 
 
 export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
+    console.log("===============0");
+
     if (!sameVNode(newNode, oldNode)) {
+        console.log("===============1");
         yield new ReplaceNodeChange(oldNode.getNode() as Node, newNode)
         return
     }
 
     if (newNode instanceof VTextNode && oldNode instanceof VTextNode) {
+        console.log("===============1");
         yield* textNodePatch(newNode, oldNode)
         return
     }
     
     if (newNode instanceof VElementNode && oldNode instanceof VElementNode) {
+        console.log("===============3");
         yield* propsPatch(newNode, oldNode)
         yield* childNodePatch(newNode, oldNode)
         return
@@ -42,25 +47,25 @@ export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Gen
     let newProps = newVNode.getTagProps()
     let oldProps = oldVNode.getTagProps()
     
-    for (const key in newProps) {
-        if (oldProps.hasOwnProperty(key)) {
-            // 新的 props 有，旧的 props 也有的属性 key
-            let newValue: any = newProps[key]
-            let oldValue: any = oldProps[key]
+    for (const prop in newProps) {
+        if (oldProps.hasOwnProperty(prop)) {
+            // 新的 props 有，旧的 props 也有的属性 prop
+            let newValue: any = newProps[prop]
+            let oldValue: any = oldProps[prop]
             if (typeof newValue !== typeof oldValue) {
-                yield new SetAttributeChange(oldNode, key, newValue)
+                yield new SetAttributeChange(oldVNode, prop, newValue)
             }
             else if (newValue === oldValue) {
                 // 不发生 Change 
                 // yield new NoChange(oldProps)
             }
             else {
-                yield new SetAttributeChange(oldNode, key, newValue)
+                yield new SetAttributeChange(oldVNode, prop, newValue)
             }
         }
         else {
-            // 新的 props 有，旧的 props 没有的属性 key
-            yield new SetAttributeChange(oldNode, key, newProps[key])
+            // 新的 props 有，旧的 props 没有的属性 prop
+            yield new SetAttributeChange(oldVNode, prop, newProps[prop])
         }
     }
 
@@ -98,4 +103,46 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
     let newChildren = newVNode.getChildren()
     let oldChildren = oldVNode.getChildren()
     
+    let newStartIdx = 0                     // 新前
+    let newEndIdx = newChildren.length - 1  // 新后
+    let oldStartIdx = 0                     // 旧前
+    let oldEndIdx = oldChildren.length - 1  // 旧后
+
+    while (newStartIdx <= newEndIdx && oldStartIdx <= oldEndIdx) {
+        let newStartVNode = newChildren[newStartIdx]    // 新前虚拟节点
+        let newEndVNode = newChildren[newEndIdx]        // 新后虚拟节点
+        let oldStartVNode = newChildren[oldStartIdx]    // 旧前虚拟节点
+        let oldEndVNode = newChildren[oldEndIdx]        // 旧后虚拟节点
+
+        if (sameVNode(newStartVNode, oldStartVNode)) {
+            // 新前-旧前 命中
+            console.log("新前-旧前 命中")
+
+            
+
+            newStartIdx++
+            oldStartIdx++
+        }
+        else if (sameVNode(newEndVNode, oldEndVNode)) {
+            // 新后-旧后 命中
+            console.log("新后-旧后 命中")
+            newEndIdx--
+            oldEndIdx--
+        }
+        else if (sameVNode(newStartVNode, oldEndVNode)) {
+            // 新前-旧后 命中
+            console.log("新前-旧后 命中")
+            newStartIdx++
+            oldEndIdx--
+        }
+        else if (sameVNode(newEndVNode, oldStartVNode)) {
+            // 新后-旧前 命中
+            console.log("新后-旧前 命中")
+            newEndIdx--
+            oldStartIdx++
+        }
+        else {
+            console.log("未命中")
+        }
+    }
 }

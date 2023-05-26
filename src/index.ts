@@ -1,7 +1,7 @@
 import { renderTo } from "./vdom/Render"
 import { AbstractVElementNode, VElementNode, VNode, VTextNode } from "./vdom/VNode"
 import { IChange, RemoveFirstChildNodeChange, RemoveLastChildNodeChange } from "./vdom/diff/Change"
-import { propsPatch, textNodePatch } from "./vdom/diff/Diff"
+import { patch, propsPatch, textNodePatch } from "./vdom/diff/Diff"
 
 // 测试 `VNode`
 function testVNode() {
@@ -154,4 +154,62 @@ function testTextNodePatch() {
     }, 5000)
 }
 
-testPropsPatch02()
+// 测试 `patch`
+function testPatch() {
+    console.log("================测试 `patch` ================")
+    let props = {
+        class: "DIV1", 
+        style: {
+            color: "red",
+            "font-size": "30px",
+            "line-height": "100px",
+            "text-align": "center",
+            "background-color": "skyblue",
+            width: "100px",
+            height: "100px",
+            margin: "10px",
+        }
+    }
+    let old_vnodeParent = VElementNode.create("div", {})
+    let old_ch1 = old_vnodeParent.addChildElementNode("div", props)
+    let old_ch2 = old_vnodeParent.addChildElementNode("div", props)
+    let old_ch3 = old_vnodeParent.addChildElementNode("div", props)
+    let old_ch4 = old_vnodeParent.addChildElementNode("div", props)
+    let old_ch5 = old_vnodeParent.addChildElementNode("div", props)
+    old_ch1.addChildTextNode("Ch01")
+    old_ch2.addChildTextNode("Ch02")
+    old_ch3.addChildTextNode("Ch03")
+    old_ch4.addChildTextNode("Ch04")
+    old_ch5.addChildTextNode("Ch05")
+
+    renderTo(old_vnodeParent, document.getElementById("root1") as HTMLElement)
+
+    let new_vnodeParent = VElementNode.create("div", {})
+    new_vnodeParent.setKey(old_vnodeParent.getKey())
+    let new_ch1 = new_vnodeParent.addChildElementNode("div", props)
+    let new_ch2 = new_vnodeParent.addChildElementNode("div", props)
+    let new_ch3 = new_vnodeParent.addChildElementNode("div", props)
+    let new_ch4 = new_vnodeParent.addChildElementNode("div", props)
+    let new_ch5 = new_vnodeParent.addChildElementNode("div", props)
+    new_ch1.setKey(old_ch1.getKey())
+    new_ch2.setKey(old_ch2.getKey())
+    new_ch3.setKey(old_ch3.getKey())
+    new_ch4.setKey(old_ch4.getKey())
+    new_ch5.setKey(old_ch5.getKey())
+    
+    function clickButton() {
+        let changes = patch(new_vnodeParent, old_vnodeParent)
+        for (const change of changes) {
+            change.apply()
+        }
+    }
+
+    document.getElementById("btn")?.addEventListener(
+        "click", (event) => {
+            console.log("开始变化")
+            clickButton()
+        }
+    )
+}
+
+testPatch()

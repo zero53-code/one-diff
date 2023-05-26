@@ -58,15 +58,15 @@ export function render(vnode: IVNode): Node {
  * @author linwukang
  */
 export function renderProps(element: HTMLElement, props: any): Node {
-    for (const key in props) {
-        if (key === 'style') {
-            renderStyles(element, props[key])
+    for (const propName in props) {
+        if (propName === 'style') {
+            renderStyles(element, props[propName])
         }
-        else if (props[key] instanceof Object) {
-            element.setAttribute(key, JSON.stringify(props[key]))
+        else if (props[propName] instanceof Object) {
+            element.setAttribute(propName, JSON.stringify(props[propName]))
         }
         else {
-            element.setAttribute(key, props[key])
+            element.setAttribute(propName, props[propName])
         }
     }
     return element
@@ -81,9 +81,9 @@ export function renderProps(element: HTMLElement, props: any): Node {
  * @author linwukang
  */
 export function renderStyles(element: HTMLElement, styles: any): Node {
-    for (const key in styles) {
-        if (Object.prototype.hasOwnProperty.call(styles, key)) {
-            element.style.setProperty(key, styles[key])
+    for (const styleName in styles) {
+        if (Object.prototype.hasOwnProperty.call(styles, styleName)) {
+            element.style.setProperty(styleName, styles[styleName])
         }
     }
     return element

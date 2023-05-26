@@ -32,6 +32,11 @@ export interface IVNode {
     getKey(): KeyType
 
     /**
+     * 设置 Key
+     */
+    setKey(key: KeyType): void
+
+    /**
      * 获取渲染后的真实 DOM 节点，若未渲染则返回 null
      */
     getNode(): Node | null
@@ -85,6 +90,10 @@ export abstract class AbstractVNode implements IVNode {
         return this.key
     }
 
+    setKey(key: KeyType): void {
+        this.key = key
+    }
+
     public getNode(): Node | null {
         return this.node
     }
@@ -129,6 +138,10 @@ export abstract class AbstractVElementNode extends AbstractVNode {
      * @returns 新的虚拟文本节点 {@link VTextNode}
      */
     public abstract addChildTextNode(text: string): VTextNode
+
+    public getNode(): HTMLElement | null {
+        return this.node as HTMLElement | null
+    }
 }
 
 /**
