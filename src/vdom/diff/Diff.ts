@@ -3,27 +3,22 @@
  */
 
 import { IVNode, VElementNode, VTextNode } from "../VNode"
-import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange } from "./Change"
+import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange, InsertBeforeChange, InsertAfterChange } from "./Change"
 import { sameVNode } from "./SameVNode"
 
 
 export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
-    console.log("===============0");
-
     if (!sameVNode(newNode, oldNode)) {
-        console.log("===============1");
         yield new ReplaceNodeChange(oldNode.getNode() as Node, newNode)
         return
     }
 
     if (newNode instanceof VTextNode && oldNode instanceof VTextNode) {
-        console.log("===============1");
         yield* textNodePatch(newNode, oldNode)
         return
     }
     
     if (newNode instanceof VElementNode && oldNode instanceof VElementNode) {
-        console.log("===============3");
         yield* propsPatch(newNode, oldNode)
         yield* childNodePatch(newNode, oldNode)
         return
@@ -111,14 +106,16 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
     while (newStartIdx <= newEndIdx && oldStartIdx <= oldEndIdx) {
         let newStartVNode = newChildren[newStartIdx]    // 新前虚拟节点
         let newEndVNode = newChildren[newEndIdx]        // 新后虚拟节点
-        let oldStartVNode = newChildren[oldStartIdx]    // 旧前虚拟节点
-        let oldEndVNode = newChildren[oldEndIdx]        // 旧后虚拟节点
+        let oldStartVNode = oldChildren[oldStartIdx]    // 旧前虚拟节点
+        let oldEndVNode = oldChildren[oldEndIdx]        // 旧后虚拟节点
 
         if (sameVNode(newStartVNode, oldStartVNode)) {
             // 新前-旧前 命中
             console.log("新前-旧前 命中")
+            // console.log(newStartIdx, oldStartIdx);
+            // console.log(newStartVNode, oldStartVNode);
 
-            
+            yield* patch(newStartVNode, oldStartVNode)
 
             newStartIdx++
             oldStartIdx++
@@ -127,6 +124,8 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
             // 新后-旧后 命中
             console.log("新后-旧后 命中")
 
+            yield* patch(newEndVNode, oldEndVNode)
+
             newEndIdx--
             oldEndIdx--
         }
@@ -134,18 +133,38 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
             // 新前-旧后 命中
             console.log("新前-旧后 命中")
 
+            yield new InsertBeforeChange(oldVNode, oldStartVNode, oldEndVNode)
+            yield* patch(newStartVNode, oldEndVNode)
+
             newStartIdx++
             oldEndIdx--
         }
         else if (sameVNode(newEndVNode, oldStartVNode)) {
             // 新后-旧前 命中
             console.log("新后-旧前 命中")
-            
+
+            yield new InsertAfterChange(oldVNode, oldEndVNode, oldStartVNode)
+            yield* patch(newEndVNode, oldStartVNode)
+
             newEndIdx--
             oldStartIdx++
         }
         else {
             console.log("未命中")
+        }
+
+        if (oldStartIdx > oldEndIdx) {
+            let before = oldChildren[newStartIdx]
+            for (let index = newStartIdx; index <= newEndIdx; index++) {
+                yield new InsertAfterChange(oldVNode, before, newChildren[index])
+                before = newChildren[index]
+            }
+        }
+        else if (newStartIdx > newEndIdx) {
+            for (let index = 0; index <= oldEndIdx; index++) {
+                /// todo
+                
+            }
         }
     }
 }

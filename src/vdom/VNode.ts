@@ -75,7 +75,8 @@ export abstract class AbstractVNode implements IVNode {
     protected comment: boolean = false
 
     protected constructor() {
-        this.key = keyCounter.next()
+        // this.key = keyCounter.next()
+        this.key = undefined
     }
 
     protected setParentVNode(parentVNode: AbstractVElementNode) {
@@ -173,6 +174,12 @@ export class VElementNode extends AbstractVElementNode {
         super.parentVNode = parentNode != undefined ? parentNode : null
         this.childNodes = childNodes == undefined ? [] : childNodes
         this.node = null
+
+        for (let propName in props) {
+            if (propName === 'key') {
+                super.key = props[propName]
+            }
+        }
     }
 
     /**

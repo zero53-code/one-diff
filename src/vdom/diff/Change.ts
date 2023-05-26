@@ -2,7 +2,7 @@
  * @author linwukang
  */
 import { render, renderProps } from "../Render"
-import { IVNode, VElementNode } from "../VNode"
+import { IVNode, VElementNode, VNode } from "../VNode"
 
 /**
  * 变化接口
@@ -172,8 +172,12 @@ export class RemoveFirstChildNodeChange implements IChange {
 
 export class InsertBeforeChange implements IChange {
     private targetNode: HTMLElement
-    constructor(targetNode: HTMLElement) {
-        this.targetNode = targetNode
+    private targetChildVNode: VNode
+    private insertVNode: VNode
+    constructor(target: VElementNode, targetChildVNode: VNode, insertVNode: VNode) {
+        this.targetNode = target.getNode() as HTMLElement
+        this.targetChildVNode = targetChildVNode
+        this.insertVNode = insertVNode
     }
 
     getTarget(): Node {
@@ -181,12 +185,47 @@ export class InsertBeforeChange implements IChange {
     }
 
     apply(): boolean {
-        if (this.targetNode.firstChild != null) {
-            this.targetNode.removeChild(this.targetNode.firstChild)
-            return true
+        let insertNode = this.insertVNode.getNode()
+
+        if (insertNode == null) {
+            insertNode = render(this.insertVNode)
         }
-        
-        return false
+        this.targetNode.insertBefore(insertNode, this.targetChildVNode.getNode() as Node)
+
+        return true
+    }
+}
+
+export class InsertAfterChange implements IChange {
+    private targetNode: HTMLElement
+    private targetChildVNode: VNode
+    private insertVNode: VNode
+    constructor(target: VElementNode, targetChildVNode: VNode, insertVNode: VNode) {
+        this.targetNode = target.getNode() as HTMLElement
+        this.targetChildVNode = targetChildVNode
+        this.insertVNode = insertVNode
+    }
+
+    getTarget(): Node {
+        return this.targetNode
+    }
+
+    apply(): boolean {
+        let insertNode = this.insertVNode.getNode()
+
+        if (insertNode == null) {
+            insertNode = render(this.insertVNode)
+        }
+        const nextSibling = this.targetChildVNode.getNode()?.nextSibling
+
+        if (nextSibling == null) {
+            this.targetNode.appendChild(insertNode)
+        }
+        else {
+            this.targetNode.insertBefore(insertNode, nextSibling)
+        }
+
+        return true
     }
 }
 

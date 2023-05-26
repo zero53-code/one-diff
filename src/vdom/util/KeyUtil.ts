@@ -1,4 +1,4 @@
-export type KeyType = number
+export type KeyType = any
 
 export class KeyCounter {
     private count: KeyType = 0

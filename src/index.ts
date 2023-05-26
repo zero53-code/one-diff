@@ -1,6 +1,6 @@
 import { renderTo } from "./vdom/Render"
 import { AbstractVElementNode, VElementNode, VNode, VTextNode } from "./vdom/VNode"
-import { IChange, RemoveFirstChildNodeChange, RemoveLastChildNodeChange } from "./vdom/diff/Change"
+import { IChange, InsertAfterChange, InsertBeforeChange, RemoveFirstChildNodeChange, RemoveLastChildNodeChange } from "./vdom/diff/Change"
 import { patch, propsPatch, textNodePatch } from "./vdom/diff/Diff"
 
 // 测试 `VNode`
@@ -30,6 +30,53 @@ function testVNode() {
     // 移除第一个子节点
     let change2: IChange = new RemoveFirstChildNodeChange(vnode2)
     console.log(change2.apply())
+}
+
+function testInsertNode() {
+    console.log("================测试 `InsertNode`================")
+    let props = {
+        class: "DIV1", 
+        style: {
+            color: "red",
+            "line-height": "20px",
+            "text-align": "center",
+            "background-color": "skyblue",
+            width: "100px",
+            height: "20px",
+            margin: "10px",
+        }
+    }
+    let vnodeParent = VElementNode.create("div", {})
+    let ch1 = vnodeParent.addChildElementNode("div", props)
+    let ch2 = vnodeParent.addChildElementNode("div", props)
+    let ch3 = vnodeParent.addChildElementNode("div", props)
+    let ch4 = vnodeParent.addChildElementNode("div", props)
+    let ch5 = vnodeParent.addChildElementNode("div", props)
+    ch1.addChildTextNode("Ch01")
+    ch2.addChildTextNode("Ch02")
+    ch3.addChildTextNode("Ch03")
+    ch4.addChildTextNode("Ch04")
+    ch5.addChildTextNode("Ch05")
+
+    let new_ch1 = VElementNode.create("div", props)
+    new_ch1.addChildTextNode("new_Ch01")
+
+    let new_ch2 = VElementNode.create("div", props)
+    new_ch2.addChildTextNode("new_Ch02")
+
+    renderTo(vnodeParent, document.getElementById("root1") as HTMLElement)
+
+    let insertChange1 = new InsertBeforeChange(vnodeParent, ch2, new_ch1)
+    let insertChange2 = new InsertAfterChange(vnodeParent, ch5, new_ch2)
+    let insertChange3 = new InsertAfterChange(vnodeParent, ch3, ch5)
+
+
+    setTimeout(() => {
+        insertChange1.apply()
+        insertChange2.apply()
+        insertChange3.apply()
+    }, 1000)
+
 }
 
 // 测试 `propsPatch`
@@ -161,21 +208,21 @@ function testPatch() {
         class: "DIV1", 
         style: {
             color: "red",
-            "font-size": "30px",
-            "line-height": "100px",
+            "font-size": "25px",
+            "line-height": "30px",
             "text-align": "center",
             "background-color": "skyblue",
             width: "100px",
-            height: "100px",
+            height: "30px",
             margin: "10px",
         }
     }
     let old_vnodeParent = VElementNode.create("div", {})
-    let old_ch1 = old_vnodeParent.addChildElementNode("div", props)
-    let old_ch2 = old_vnodeParent.addChildElementNode("div", props)
-    let old_ch3 = old_vnodeParent.addChildElementNode("div", props)
-    let old_ch4 = old_vnodeParent.addChildElementNode("div", props)
-    let old_ch5 = old_vnodeParent.addChildElementNode("div", props)
+    let old_ch1 = old_vnodeParent.addChildElementNode("div", { ...props, key: 1 })
+    let old_ch2 = old_vnodeParent.addChildElementNode("div", { ...props, key: 2 })
+    let old_ch3 = old_vnodeParent.addChildElementNode("div", { ...props, key: 3 })
+    let old_ch4 = old_vnodeParent.addChildElementNode("div", { ...props, key: 4 })
+    let old_ch5 = old_vnodeParent.addChildElementNode("div", { ...props, key: 5 })
     old_ch1.addChildTextNode("Ch01")
     old_ch2.addChildTextNode("Ch02")
     old_ch3.addChildTextNode("Ch03")
@@ -186,19 +233,27 @@ function testPatch() {
 
     let new_vnodeParent = VElementNode.create("div", {})
     new_vnodeParent.setKey(old_vnodeParent.getKey())
-    let new_ch1 = new_vnodeParent.addChildElementNode("div", props)
-    let new_ch2 = new_vnodeParent.addChildElementNode("div", props)
-    let new_ch3 = new_vnodeParent.addChildElementNode("div", props)
-    let new_ch4 = new_vnodeParent.addChildElementNode("div", props)
-    let new_ch5 = new_vnodeParent.addChildElementNode("div", props)
-    new_ch1.setKey(old_ch1.getKey())
-    new_ch2.setKey(old_ch2.getKey())
-    new_ch3.setKey(old_ch3.getKey())
-    new_ch4.setKey(old_ch4.getKey())
-    new_ch5.setKey(old_ch5.getKey())
+    let new_ch2 = new_vnodeParent.addChildElementNode("div", { ...props, key: 2 })
+    let new_ch3 = new_vnodeParent.addChildElementNode("div", { ...props, key: 3 })
+    let new_ch4 = new_vnodeParent.addChildElementNode("div", { ...props, key: 4 })
+    let new_ch5 = new_vnodeParent.addChildElementNode("div", { ...props, key: 5 })
+    let new_ch6 = new_vnodeParent.addChildElementNode("div", { ...props, key: 6 })
+    let new_ch7 = new_vnodeParent.addChildElementNode("div", { ...props, key: 7 })
+    let new_ch8 = new_vnodeParent.addChildElementNode("div", { ...props, key: 8 })
+    let new_ch1 = new_vnodeParent.addChildElementNode("div", { ...props, key: 1 })
+    new_ch6.addChildTextNode("new_ch6")
+    new_ch7.addChildTextNode("new_ch7")
+    new_ch8.addChildTextNode("new_ch8")
+    // new_ch1.setKey(old_ch1.getKey())
+    // new_ch2.setKey(old_ch2.getKey())
+    // new_ch3.setKey(old_ch3.getKey())
+    // new_ch4.setKey(old_ch4.getKey())
+    // new_ch5.setKey(old_ch5.getKey())
     
     function clickButton() {
         let changes = patch(new_vnodeParent, old_vnodeParent)
+        console.log(old_vnodeParent)
+        console.log(new_vnodeParent)
         for (const change of changes) {
             change.apply()
         }
@@ -212,10 +267,10 @@ function testPatch() {
     )
 }
 
-testVNode()
-testPropsPatch01()
-testPropsPatch02()
-testTextNodePatch()
-
+// testVNode()
+// testPropsPatch01()
+// testPropsPatch02()
+// testTextNodePatch()
+// testInsertNode()
 
 testPatch()
