@@ -126,18 +126,21 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         else if (sameVNode(newEndVNode, oldEndVNode)) {
             // 新后-旧后 命中
             console.log("新后-旧后 命中")
+
             newEndIdx--
             oldEndIdx--
         }
         else if (sameVNode(newStartVNode, oldEndVNode)) {
             // 新前-旧后 命中
             console.log("新前-旧后 命中")
+
             newStartIdx++
             oldEndIdx--
         }
         else if (sameVNode(newEndVNode, oldStartVNode)) {
             // 新后-旧前 命中
             console.log("新后-旧前 命中")
+            
             newEndIdx--
             oldStartIdx++
         }

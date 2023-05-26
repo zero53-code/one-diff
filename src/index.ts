@@ -6,13 +6,13 @@ import { patch, propsPatch, textNodePatch } from "./vdom/diff/Diff"
 // 测试 `VNode`
 function testVNode() {
     console.log("================测试 `VNode`================")
-    let vnode1: VNode = VElementNode.create("div", {class: "DIV1111", style: {color: "red"}})
+    let vnode1: VElementNode = VElementNode.create("div", {class: "DIV1111", style: {color: "red"}})
     vnode1.addChildElementNode("div", {}).addChildTextNode("这是文本节点1")
     vnode1.addChildElementNode("div", {}).addChildTextNode("这是文本节点2")
     vnode1.addChildTextNode("这是文本节点3")
     vnode1.addChildTextNode("这是文本节点4")
 
-    let vnode2: VNode = VElementNode.create("div", {class: "DIV2222", style: {color: "green"}})
+    let vnode2: VElementNode = VElementNode.create("div", {class: "DIV2222", style: {color: "green"}})
     vnode2.addChildElementNode("div", {}).addChildTextNode("这是文本节点A")
     vnode2.addChildElementNode("div", {}).addChildTextNode("这是文本节点B")
     vnode2.addChildTextNode("这是文本节点C")
@@ -24,11 +24,11 @@ function testVNode() {
     let node2 = renderTo(vnode2, document.getElementById("root2") as HTMLElement) as HTMLElement
 
     // 移除最后一个子节点
-    let change1: IChange = new RemoveLastChildNodeChange(node1)
+    let change1: IChange = new RemoveLastChildNodeChange(vnode1)
     console.log(change1.apply())
 
     // 移除第一个子节点
-    let change2: IChange = new RemoveFirstChildNodeChange(node2)
+    let change2: IChange = new RemoveFirstChildNodeChange(vnode2)
     console.log(change2.apply())
 }
 
@@ -211,5 +211,11 @@ function testPatch() {
         }
     )
 }
+
+testVNode()
+testPropsPatch01()
+testPropsPatch02()
+testTextNodePatch()
+
 
 testPatch()

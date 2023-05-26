@@ -12,13 +12,6 @@ import { IVNode, VElementNode } from "../VNode"
  */
 export interface IChange {
     /**
-     * 添加新的变化并返回，该操作不会修改自身
-     * @param change 新增的变化
-     * @returns 新增后的变化
-     */
-    // addChange(change: IChange): IChange
-
-    /**
      * 获取目标对象
      */
     getTarget(): Node
@@ -108,15 +101,15 @@ export class ReplaceTextChange implements IChange {
  * @author linwukang
  */
 export class AppendChildNodeChange implements IChange {
-    private targetNode: Node
+    private targetNode: HTMLElement
     private newChildNode: IVNode
 
-    constructor(targetNode: Node, newChildNode: IVNode) {
-        this.targetNode = targetNode
+    constructor(target: VElementNode, newChildNode: IVNode) {
+        this.targetNode = target.getNode() as HTMLElement
         this.newChildNode = newChildNode
     }
 
-    getTarget(): Node {
+    getTarget(): HTMLElement {
         return this.targetNode
     }
     apply(): boolean {
@@ -133,11 +126,11 @@ export class AppendChildNodeChange implements IChange {
  */
 export class RemoveLastChildNodeChange implements IChange {
     private targetNode: HTMLElement
-    constructor(targetNode: HTMLElement) {
-        this.targetNode = targetNode
+    constructor(targetNode: VElementNode) {
+        this.targetNode = targetNode.getNode() as HTMLElement
     }
 
-    getTarget(): Node {
+    getTarget(): HTMLElement {
         return this.targetNode
     }
     
@@ -159,6 +152,26 @@ export class RemoveLastChildNodeChange implements IChange {
  */
 export class RemoveFirstChildNodeChange implements IChange {
     private targetNode: HTMLElement
+    constructor(target: VElementNode) {
+        this.targetNode = target.getNode() as HTMLElement
+    }
+
+    getTarget(): Node {
+        return this.targetNode
+    }
+
+    apply(): boolean {
+        if (this.targetNode.firstChild != null) {
+            this.targetNode.removeChild(this.targetNode.firstChild)
+            return true
+        }
+        
+        return false
+    }
+}
+
+export class InsertBeforeChange implements IChange {
+    private targetNode: HTMLElement
     constructor(targetNode: HTMLElement) {
         this.targetNode = targetNode
     }
@@ -176,7 +189,6 @@ export class RemoveFirstChildNodeChange implements IChange {
         return false
     }
 }
-
 
 //////////////////////////
 
