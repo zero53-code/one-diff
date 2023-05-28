@@ -170,7 +170,12 @@ export class RemoveFirstChildNodeChange implements IChange {
     }
 }
 
-export class InsertBeforeChange implements IChange {
+/**
+ * 插入到子节点之前
+ * 
+ * @author linwukang
+ */
+export class InsertBeforeChildChange implements IChange {
     private targetNode: HTMLElement
     private targetChildVNode: VNode
     private insertVNode: VNode
@@ -196,7 +201,12 @@ export class InsertBeforeChange implements IChange {
     }
 }
 
-export class InsertAfterChange implements IChange {
+/**
+ * 插入到子节点之后
+ * 
+ * @author linwukang
+ */
+export class InsertAfterChildChange implements IChange {
     private targetNode: HTMLElement
     private targetChildVNode: VNode
     private insertVNode: VNode
@@ -225,6 +235,29 @@ export class InsertAfterChange implements IChange {
             this.targetNode.insertBefore(insertNode, nextSibling)
         }
 
+        return true
+    }
+}
+
+/**
+ * 移除子节点
+ * 
+ * @author linwukang
+ */
+export class RemoveChildChange implements IChange {
+    private targetNode: HTMLElement
+    private childNode: Node
+    constructor(target: VElementNode, childNode: VNode) {
+        this.targetNode = target.getNode() as HTMLElement
+        this.childNode = childNode.getNode() as Node
+    }
+
+    getTarget(): Node {
+        return this.targetNode
+    }
+
+    apply(): boolean {
+        this.targetNode.removeChild(this.childNode)
         return true
     }
 }

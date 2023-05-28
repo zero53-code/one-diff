@@ -27,6 +27,10 @@ export interface IVNode {
      */
     getParentVNode(): AbstractVElementNode | null
     /**
+     * 设置父虚拟节点
+     */
+    // setParentVNode(parentVNode: AbstractVElementNode): void
+    /**
      * 获取 Key
      */
     getKey(): KeyType
@@ -87,7 +91,7 @@ export abstract class AbstractVNode implements IVNode {
         return this.parentVNode
     }
 
-    public getKey(): number {
+    public getKey(): KeyType {
         return this.key
     }
 
@@ -178,6 +182,8 @@ export class VElementNode extends AbstractVElementNode {
         for (let propName in props) {
             if (propName === 'key') {
                 super.key = props[propName]
+                delete props.key
+                break
             }
         }
     }
@@ -218,8 +224,7 @@ export class VElementNode extends AbstractVElementNode {
     }
     
     getChildren(): VNode[] {
-        // 返回子节点数组的副本，防止在外部修改数组
-        return this.childNodes.slice()
+        return this.childNodes
     }
 }
 
@@ -231,7 +236,7 @@ export class VElementNode extends AbstractVElementNode {
 export class VTextNode extends AbstractVNode {
     private text: string
 
-    private constructor(text: string, parentNode: VElementNode) {
+    private constructor(text: string, parentNode: VElementNode | undefined) {
         super()
         this.text = text
     }
@@ -240,7 +245,7 @@ export class VTextNode extends AbstractVNode {
         return this.text
     }
 
-    static create(text: string, parentNode: VElementNode): VTextNode {
+    static create(text: string, parentNode: VElementNode | undefined): VTextNode {
         return new VTextNode(text, parentNode)
     }
 }

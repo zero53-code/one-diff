@@ -2,10 +2,11 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VTextNode } from "../VNode"
-import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange, InsertBeforeChange, InsertAfterChange } from "./Change"
+import { IVNode, VElementNode, VNode, VTextNode } from "../VNode"
+import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange, InsertBeforeChildChange, InsertAfterChildChange, RemoveChildChange } from "./Change"
 import { sameVNode } from "./SameVNode"
-
+import { KeyType } from "../util/KeyUtil"
+import { render } from "../Render"
 
 export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
     if (!sameVNode(newNode, oldNode)) {
@@ -102,6 +103,9 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
     let newEndIdx = newChildren.length - 1  // 新后
     let oldStartIdx = 0                     // 旧前
     let oldEndIdx = oldChildren.length - 1  // 旧后
+    let keyToOldIdx: undefined | Map<KeyType, number> = undefined
+    let idxInOld: undefined | number = undefined
+    let movedIdx: Set<number> = new Set()
 
     while (newStartIdx <= newEndIdx && oldStartIdx <= oldEndIdx) {
         let newStartVNode = newChildren[newStartIdx]    // 新前虚拟节点
@@ -109,7 +113,19 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         let oldStartVNode = oldChildren[oldStartIdx]    // 旧前虚拟节点
         let oldEndVNode = oldChildren[oldEndIdx]        // 旧后虚拟节点
 
-        if (sameVNode(newStartVNode, oldStartVNode)) {
+        if (movedIdx.has(newStartIdx)) {
+            newStartIdx++
+        }
+        else if (movedIdx.has(newEndIdx)) {
+            newEndIdx--
+        }
+        else if (movedIdx.has(oldStartIdx)) {
+            oldStartIdx++
+        }
+        else if (movedIdx.has(oldEndIdx)) { 
+            oldEndIdx--
+        }
+        else if (sameVNode(newStartVNode, oldStartVNode)) {
             // 新前-旧前 命中
             console.log("新前-旧前 命中")
             // console.log(newStartIdx, oldStartIdx);
@@ -133,7 +149,7 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
             // 新前-旧后 命中
             console.log("新前-旧后 命中")
 
-            yield new InsertBeforeChange(oldVNode, oldStartVNode, oldEndVNode)
+            yield new InsertBeforeChildChange(oldVNode, oldStartVNode, oldEndVNode)
             yield* patch(newStartVNode, oldEndVNode)
 
             newStartIdx++
@@ -143,7 +159,7 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
             // 新后-旧前 命中
             console.log("新后-旧前 命中")
 
-            yield new InsertAfterChange(oldVNode, oldEndVNode, oldStartVNode)
+            yield new InsertAfterChildChange(oldVNode, oldEndVNode, oldStartVNode)
             yield* patch(newEndVNode, oldStartVNode)
 
             newEndIdx--
@@ -151,20 +167,55 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         }
         else {
             console.log("未命中")
-        }
 
-        if (oldStartIdx > oldEndIdx) {
-            let before = oldChildren[newStartIdx]
-            for (let index = newStartIdx; index <= newEndIdx; index++) {
-                yield new InsertAfterChange(oldVNode, before, newChildren[index])
-                before = newChildren[index]
+            if (keyToOldIdx === undefined) {
+                keyToOldIdx = createKeyToOldIdx(oldChildren, oldStartIdx, oldEndIdx)
+            }
+            else {
+                idxInOld = keyToOldIdx.get(newStartVNode.getKey())
+                if (idxInOld === undefined) {
+                    yield new InsertBeforeChildChange(oldVNode, oldStartVNode, newStartVNode)
+                    newStartIdx++
+                }
+                else {
+                    let nodeToMove = oldChildren[idxInOld]
+                    yield new InsertBeforeChildChange(oldVNode, oldStartVNode, nodeToMove)
+                    yield* patch(newStartVNode, nodeToMove)
+                    movedIdx.add(idxInOld)
+                    newStartIdx++
+                }
             }
         }
-        else if (newStartIdx > newEndIdx) {
-            for (let index = 0; index <= oldEndIdx; index++) {
-                /// todo
-                
-            }
+    }   // while end
+
+    if (oldStartIdx > oldEndIdx) {
+        let before = oldChildren[newStartIdx]
+        for (let index = newStartIdx; index <= newEndIdx; index++) {
+            yield new InsertAfterChildChange(oldVNode, before, newChildren[index])
+            before = newChildren[index]
         }
     }
+    else if (newStartIdx > newEndIdx) {
+        for (let index = oldStartIdx; index <= oldEndIdx; index++) {
+            yield new RemoveChildChange(oldVNode, oldChildren[index]);
+        }
+    }
+}
+
+/**
+ * 从子节点的 key 映射到 index
+ * @param oldChilren 子节点数组
+ * @param startIdx 开始下标
+ * @param endIdx 结束下标
+ * @returns key 到 index 的 Map 集合
+ */
+function createKeyToOldIdx(oldChilren: VNode[], startIdx: number, endIdx: number): Map<KeyType, number> {
+    let keyToOldIdx = new Map<KeyType, number>()
+    for (let index = startIdx; index <= endIdx; index++) {
+        const key = oldChilren[index].getKey()
+        if (key !== undefined) {
+            keyToOldIdx.set(key, index)
+        }
+    }
+    return keyToOldIdx
 }

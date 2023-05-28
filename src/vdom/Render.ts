@@ -2,7 +2,7 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VTextNode } from "./VNode"
+import { IVNode, VElementNode, VNode, VTextNode } from "./VNode"
 
 /**
  * 将虚拟节点渲染到真实 DOM 元素上
@@ -57,7 +57,7 @@ export function render(vnode: IVNode): Node {
  * 
  * @author linwukang
  */
-export function renderProps(element: HTMLElement, props: any): Node {
+export function renderProps(element: HTMLElement, props: Record<string, any>): Node {
     for (const propName in props) {
         if (propName === 'style') {
             renderStyles(element, props[propName])
@@ -87,4 +87,34 @@ export function renderStyles(element: HTMLElement, styles: any): Node {
         }
     }
     return element
+}
+
+/**
+ * 创建虚拟 DOM 节点
+ * @param tabNameOrText 
+ * @param props 
+ * @param children 
+ * @returns 
+ */
+export function h(tabNameOrText: string, props?: Record<string, any>, children?: VNode[] | VNode): VNode {
+    if (props === undefined && children === undefined) {
+        return VTextNode.create(tabNameOrText, undefined);
+    }
+    else {
+        props = props || {}
+        let newVElementNode = VElementNode.create(tabNameOrText, props)
+        children = children || []
+        if (!Array.isArray(children)) {
+            (children as any).setParentVNode(newVElementNode)
+            newVElementNode.getChildren().push(children)
+        }
+        else {
+            for (let i = 0; i < children.length; i++) {
+                (children[i] as any).setParentVNode(newVElementNode)
+                newVElementNode.getChildren().push(children[i])
+            }
+        }
+
+        return newVElementNode
+    }
 }
