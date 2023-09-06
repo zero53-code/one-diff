@@ -2,7 +2,9 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VTextNode } from "../VNode"
+import IVNode from "../vnode/IVNode"
+import VElementNode from "../vnode/VElementNode"
+import VTextNode from "../vnode/VTextNode"
 
 /**
  * 判断两个虚拟节点是否为同样的节点

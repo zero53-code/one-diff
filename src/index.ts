@@ -1,7 +1,14 @@
-import { h, renderTo } from "./vdom/Render"
-import { AbstractVElementNode, VElementNode, VNode, VTextNode } from "./vdom/VNode"
-import { IChange, InsertAfterChildChange, InsertBeforeChildChange, RemoveFirstChildNodeChange, RemoveLastChildNodeChange } from "./vdom/diff/Change"
-import { patch, propsPatch, textNodePatch } from "./vdom/diff/Diff"
+import {h, renderTo} from "./lily/core/vdom/Render"
+import VNode from "./lily/core/vdom/vnode/VNode"
+import IChange from "./lily/core/vdom/diff/change/IChange"
+import {patch, propsPatch, textNodePatch} from "./lily/core/vdom/diff/Diff"
+import RemoveLastChildNodeChange from "./lily/core/vdom/diff/change/RemoveLastChildNodeChange";
+import RemoveFirstChildNodeChange from "./lily/core/vdom/diff/change/RemoveFirstChildNodeChange";
+import InsertBeforeChildChange from "./lily/core/vdom/diff/change/InsertBeforeChildChange";
+import InsertAfterChildChange from "./lily/core/vdom/diff/change/InsertAfterChildChange";
+import AbstractVElementNode from "./lily/core/vdom/vnode/AbstractVElementNode";
+import VElementNode from "./lily/core/vdom/vnode/VElementNode";
+import VTextNode from "./lily/core/vdom/vnode/VTextNode";
 
 // 测试 `VNode`
 function testVNode() {
@@ -35,7 +42,7 @@ function testVNode() {
 function testInsertNode() {
     console.log("================测试 `InsertNode`================")
     let props = {
-        class: "DIV1", 
+        class: "DIV1",
         style: {
             color: "red",
             "line-height": "20px",
@@ -82,24 +89,24 @@ function testInsertNode() {
 // 测试 `propsPatch`
 function testPropsPatch01() {
     console.log("================测试 `propsPatch` 01================")
-    let vnode1 = VElementNode.create("div", 
+    let vnode1 = VElementNode.create("div",
         {
-            class: "DIV1", 
+            class: "DIV1",
             "width": "100px",
             style: {
                 color: "red",
                 "background-color": "blue"
             }
         })
-    let vnode2 = VElementNode.create("div", 
-    {
-        class: "DIV2",
-        "v-if": "???", 
-        style: {
-            color: "green",
-            "background-color": "lightyellow"
-        }
-    })
+    let vnode2 = VElementNode.create("div",
+        {
+            class: "DIV2",
+            "v-if": "???",
+            style: {
+                color: "green",
+                "background-color": "lightyellow"
+            }
+        })
     vnode1.addChildTextNode("Node1 我的属性将发生变化")
     vnode2.addChildTextNode("Node2")
     let node1 = renderTo(vnode1, document.getElementById("root1") as HTMLElement) as HTMLElement
@@ -114,14 +121,14 @@ function testPropsPatch01() {
         }
     }, 3000)
 
-    
+
 }
 
 // 测试 `propsPatch`
 function testPropsPatch02() {
     console.log("================测试 `propsPatch` 02================")
     let props = {
-        class: "DIV1", 
+        class: "DIV1",
         style: {
             color: "red",
             "background-color": "blue",
@@ -147,7 +154,7 @@ function testPropsPatch02() {
         console.log("================CHANGE================")
 
         let changedProps = {
-            class: "DIV1", 
+            class: "DIV1",
             style: {
                 color: "blue",
                 "background-color": "#f0f0f0",
@@ -179,7 +186,7 @@ function testPropsPatch02() {
         }
     }, 3000)
 
-    
+
 }
 
 // 测试 `textNodePatch`
@@ -205,7 +212,7 @@ function testTextNodePatch() {
 function testPatch01() {
     console.log("================测试 `patch` 01 ================")
     let props = {
-        class: "DIV1", 
+        class: "DIV1",
         style: {
             color: "red",
             "font-size": "20px",
@@ -218,11 +225,11 @@ function testPatch01() {
         }
     }
     let old_vnodeParent = VElementNode.create("div", {})
-    let old_ch1 = old_vnodeParent.addChildElementNode("div", { ...props, key: 1 })
-    let old_ch2 = old_vnodeParent.addChildElementNode("div", { ...props, key: 2 })
-    let old_ch3 = old_vnodeParent.addChildElementNode("div", { ...props, key: 3 })
-    let old_ch4 = old_vnodeParent.addChildElementNode("div", { ...props, key: 4 })
-    let old_ch5 = old_vnodeParent.addChildElementNode("div", { ...props, key: 5 })
+    let old_ch1 = old_vnodeParent.addChildElementNode("div", {...props, key: 1})
+    let old_ch2 = old_vnodeParent.addChildElementNode("div", {...props, key: 2})
+    let old_ch3 = old_vnodeParent.addChildElementNode("div", {...props, key: 3})
+    let old_ch4 = old_vnodeParent.addChildElementNode("div", {...props, key: 4})
+    let old_ch5 = old_vnodeParent.addChildElementNode("div", {...props, key: 5})
     old_ch1.addChildTextNode("Ch01")
     old_ch2.addChildTextNode("Ch02")
     old_ch3.addChildTextNode("Ch03")
@@ -240,14 +247,14 @@ function testPatch01() {
 
     let new_vnodeParent = VElementNode.create("div", {})
     new_vnodeParent.setKey(old_vnodeParent.getKey())
-    let new_ch2 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 2 })
-    let new_ch3 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 3 })
-    let new_ch4 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 4 })
-    let new_ch5 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 5 })
-    let new_ch6 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 6 })
-    let new_ch7 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 7 })
-    let new_ch8 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 8 })
-    let new_ch1 = new_vnodeParent.addChildElementNode("div", { ...new_props, key: 1 })
+    let new_ch2 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 2})
+    let new_ch3 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 3})
+    let new_ch4 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 4})
+    let new_ch5 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 5})
+    let new_ch6 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 6})
+    let new_ch7 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 7})
+    let new_ch8 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 8})
+    let new_ch1 = new_vnodeParent.addChildElementNode("div", {...new_props, key: 1})
     new_ch1.addChildTextNode("Ch01")
     new_ch2.addChildTextNode("Ch02")
     new_ch3.addChildTextNode("Ch03")
@@ -262,7 +269,7 @@ function testPatch01() {
     // new_ch3.setKey(old_ch3.getKey())
     // new_ch4.setKey(old_ch4.getKey())
     // new_ch5.setKey(old_ch5.getKey())
-    
+
     function clickButton() {
         let changes = patch(new_vnodeParent, old_vnodeParent)
         console.log(old_vnodeParent)
@@ -284,7 +291,7 @@ function testPatch01() {
 function testPatch02() {
     console.log("================测试 `patch` 02 ================")
     let props = {
-        class: "DIV1", 
+        class: "DIV1",
         style: {
             color: "red",
             "font-size": "20px",
@@ -297,25 +304,25 @@ function testPatch02() {
         }
     }
     let old_vnodeParent = h("div", {}, [
-        h("div", { ...props, key: 1 }, h("ch01")),
-        h("div", { ...props, key: 2 }, h("ch02")),
-        h("div", { ...props, key: 3 }, h("ch03")),
-        h("div", { ...props, key: 4 }, h("ch04")),
-        h("div", { ...props, key: 5 }, h("ch05")),
+        h("div", {...props, key: 1}, h("ch01")),
+        h("div", {...props, key: 2}, h("ch02")),
+        h("div", {...props, key: 3}, h("ch03")),
+        h("div", {...props, key: 4}, h("ch04")),
+        h("div", {...props, key: 5}, h("ch05")),
     ]) as VElementNode
 
     renderTo(old_vnodeParent, document.getElementById("root1") as HTMLElement)
 
-    let new_vnodeParent = h("div", { key: old_vnodeParent.getKey() }, [
-        h("div", { ...props, key: 1 }, h("ch01")),
-        h("div", { ...props, key: 13 }, h("new-ch13")),
-        h("div", { ...props, key: 2 }, h("ch02")),
-        h("div", { ...props, key: 8 }, h("new-ch08")),
-        h("div", { ...props, key: 11 }, h("new-ch11")),
-        h("div", { ...props, key: 3 }, h("ch03")),
-        h("div", { ...props, key: 9 }, h("new-ch09")),
-        h("div", { ...props, key: 10 }, h("new-ch10")),
-        h("div", { ...props, key: 12 }, h("new-ch12")),
+    let new_vnodeParent = h("div", {key: old_vnodeParent.getKey()}, [
+        h("div", {...props, key: 1}, h("ch01")),
+        h("div", {...props, key: 13}, h("new-ch13")),
+        h("div", {...props, key: 2}, h("ch02")),
+        h("div", {...props, key: 8}, h("new-ch08")),
+        h("div", {...props, key: 11}, h("new-ch11")),
+        h("div", {...props, key: 3}, h("ch03")),
+        h("div", {...props, key: 9}, h("new-ch09")),
+        h("div", {...props, key: 10}, h("new-ch10")),
+        h("div", {...props, key: 12}, h("new-ch12")),
     ]) as VElementNode
 
     function clickButton() {
@@ -324,7 +331,9 @@ function testPatch02() {
         console.log(new_vnodeParent)
         let timeout = 1000;
         for (const change of changes) {
-            setTimeout(() => {change.apply()}, timeout)
+            setTimeout(() => {
+                change.apply()
+            }, timeout)
             timeout += 1000
             // change.apply()
         }
@@ -342,7 +351,7 @@ function testPatch02() {
 function testPatch03() {
     console.log("================测试 `patch` 03 ================")
     let props = {
-        class: "DIV1", 
+        class: "DIV1",
         style: {
             color: "red",
             "font-size": "20px",
@@ -355,21 +364,21 @@ function testPatch03() {
         }
     }
     let old_vnodeParent = h("div", {}, [
-        h("div", { ...props, key: 1 }, h("ch01")),
-        h("div", { ...props, key: 2 }, h("ch02")),
-        h("div", { ...props, key: 3 }, h("ch03")),
-        h("div", { ...props, key: 4 }, h("ch04")),
-        h("div", { ...props, key: 5 }, h("ch05")),
+        h("div", {...props, key: 1}, h("ch01")),
+        h("div", {...props, key: 2}, h("ch02")),
+        h("div", {...props, key: 3}, h("ch03")),
+        h("div", {...props, key: 4}, h("ch04")),
+        h("div", {...props, key: 5}, h("ch05")),
     ]) as VElementNode
 
     renderTo(old_vnodeParent, document.getElementById("root1") as HTMLElement)
 
-    let new_vnodeParent = h("div", { key: old_vnodeParent.getKey() }, [
-        h("div", { ...props, key: 5 }, h("ch05")),
-        h("div", { ...props, key: 4 }, h("ch04")),
-        h("div", { ...props, key: 3 }, h("ch03")),
-        h("div", { ...props, key: 2 }, h("ch02")),
-        h("div", { ...props, key: 1 }, h("ch01")),
+    let new_vnodeParent = h("div", {key: old_vnodeParent.getKey()}, [
+        h("div", {...props, key: 5}, h("ch05")),
+        h("div", {...props, key: 4}, h("ch04")),
+        h("div", {...props, key: 3}, h("ch03")),
+        h("div", {...props, key: 2}, h("ch02")),
+        h("div", {...props, key: 1}, h("ch01")),
     ]) as VElementNode
 
     function clickButton() {
@@ -378,7 +387,9 @@ function testPatch03() {
         console.log(new_vnodeParent)
         let timeout = 1000;
         for (const change of changes) {
-            setTimeout(() => {change.apply()}, timeout)
+            setTimeout(() => {
+                change.apply()
+            }, timeout)
             timeout += 1000
             // change.apply()
         }

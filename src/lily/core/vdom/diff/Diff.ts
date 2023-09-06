@@ -2,11 +2,20 @@
  * @author linwukang
  */
 
-import { IVNode, VElementNode, VNode, VTextNode } from "../VNode"
-import { SetAttributeChange, DeleteAttributeChange, IChange, NoChange, ReplaceNodeChange, ReplaceTextChange, InsertBeforeChildChange, InsertAfterChildChange, RemoveChildChange } from "./Change"
+import VNode from "../vnode/VNode"
+import IChange from "./change/IChange"
 import { sameVNode } from "./SameVNode"
 import { KeyType } from "../util/KeyUtil"
-import { render } from "../Render"
+import ReplaceNodeChange from "./change/ReplaceNodeChange"
+import ReplaceTextChange from "./change/ReplaceTextChange"
+import InsertBeforeChildChange from "./change/InsertBeforeChildChange"
+import InsertAfterChildChange from "./change/InsertAfterChildChange"
+import RemoveChildChange from "./change/RemoveChildChange"
+import SetAttributeChange from "./change/SetAttributeChange"
+import DeleteAttributeChange from "./change/DeleteAttributeChange"
+import IVNode from "../vnode/IVNode"
+import VElementNode from "../vnode/VElementNode"
+import VTextNode from "../vnode/VTextNode"
 
 export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
     if (!sameVNode(newNode, oldNode)) {
@@ -204,15 +213,15 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
 
 /**
  * 从子节点的 key 映射到 index
- * @param oldChilren 子节点数组
+ * @param oldChildren 子节点数组
  * @param startIdx 开始下标
  * @param endIdx 结束下标
  * @returns key 到 index 的 Map 集合
  */
-function createKeyToOldIdx(oldChilren: VNode[], startIdx: number, endIdx: number): Map<KeyType, number> {
+function createKeyToOldIdx(oldChildren: VNode[], startIdx: number, endIdx: number): Map<KeyType, number> {
     let keyToOldIdx = new Map<KeyType, number>()
     for (let index = startIdx; index <= endIdx; index++) {
-        const key = oldChilren[index].getKey()
+        const key = oldChildren[index].getKey()
         if (key !== undefined) {
             keyToOldIdx.set(key, index)
         }
