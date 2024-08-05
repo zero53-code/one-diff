@@ -4,7 +4,7 @@ import VElementNode from "../../vnode/VElementNode";
 /**
  * 移除第一个子节点
  *
- * @author linwukang
+ * @author zero53
  */
 export default class RemoveFirstChildNodeChange implements IChange {
     private readonly targetNode: HTMLElement

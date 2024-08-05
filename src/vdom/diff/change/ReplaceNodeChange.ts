@@ -5,7 +5,7 @@ import IVNode from "../../vnode/IVNode";
 /**
  * 节点替换
  *
- * @author linwukang
+ * @author zero53
  */
 export default class ReplaceNodeChange implements IChange {
     private readonly targetNode: Node

@@ -1,12 +1,8 @@
 /**
- * @author linwukang
- */
-
-/**
  * 变化接口
  * 用于记录对象和值的变化
  *
- * @author linwukang
+ * @author zero53
  */
 export default interface IChange {
     /**

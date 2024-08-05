@@ -5,7 +5,7 @@ import VElementNode from "../../vnode/VElementNode";
 /**
  * 向目标元素添加或修改属性
  *
- * @author linwukang
+ * @author zero53
  */
 export default class SetAttributeChange implements IChange {
     private readonly targetNode: HTMLElement

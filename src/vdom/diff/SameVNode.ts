@@ -1,7 +1,3 @@
-/**
- * @author linwukang
- */
-
 import IVNode from "../vnode/IVNode"
 import VElementNode from "../vnode/VElementNode"
 import VTextNode from "../vnode/VTextNode"
@@ -16,7 +12,7 @@ import VTextNode from "../vnode/VTextNode"
  * @param vNode2 虚拟节点 2
  * @returns 相同返回 `ture`，不同返回 `false`
  * 
- * @author linwukang
+ * @author zero53
  */
 export function sameVNode(vNode1: IVNode, vNode2: IVNode): boolean {
     return vNode1.getKey() === vNode2.getKey() 

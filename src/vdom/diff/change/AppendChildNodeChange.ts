@@ -6,7 +6,7 @@ import VElementNode from "../../vnode/VElementNode";
 /**
  * 向最后添加一个子节点
  *
- * @author linwukang
+ * @author zero53
  */
 export default class AppendChildNodeChange implements IChange {
     private readonly targetNode: HTMLElement

@@ -3,7 +3,7 @@ import IChange from "./IChange";
 /**
  * 文本节点的文本替换
  *
- * @author linwukang
+ * @author zero53
  */
 export default class ReplaceTextChange implements IChange {
     target: Text

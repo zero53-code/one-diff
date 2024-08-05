@@ -1,11 +1,11 @@
-import {KeyType} from "../util/KeyUtil";
+import {KeyType} from "../util/Key";
 
 import AbstractVElementNode from "./AbstractVElementNode";
 
 /**
  * 虚拟节点接口
  *
- * @author linwukang
+ * @author zero53
  */
 export default interface IVNode {
     /**
@@ -16,8 +16,8 @@ export default interface IVNode {
     /**
      * 设置父虚拟节点
      */
-
     // setParentVNode(parentVNode: AbstractVElementNode): void
+    
     /**
      * 获取 Key
      */

@@ -6,7 +6,7 @@ import VElementNode from "../../vnode/VElementNode";
 /**
  * 插入到子节点之前
  *
- * @author linwukang
+ * @author zero53
  */
 export default class InsertBeforeChildChange implements IChange {
     private readonly targetNode: HTMLElement

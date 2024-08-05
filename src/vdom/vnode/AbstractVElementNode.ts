@@ -6,7 +6,7 @@ import VNode from "./VNode";
 /**
  * 虚拟 DOM 元素接口
  *
- * @author linwukang
+ * @author zero53
  */
 export default abstract class AbstractVElementNode extends AbstractVNode {
     /**
@@ -39,6 +39,10 @@ export default abstract class AbstractVElementNode extends AbstractVNode {
      */
     public abstract addChildTextNode(text: string): VTextNode
 
+    /**
+     * 获取真实 DOM 节点
+     * @returns 真实 DOM 节点或者 null
+     */
     public getNode(): HTMLElement | null {
         return this.node as HTMLElement | null
     }

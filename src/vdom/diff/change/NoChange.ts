@@ -3,7 +3,7 @@ import IChange from "./IChange";
 /**
  * 无变化
  *
- * @author linwukang
+ * @author zero53
  */
 export default class NoChange implements IChange {
     private readonly target: any

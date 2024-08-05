@@ -4,7 +4,7 @@ import VElementNode from "./VElementNode";
 /**
  * 虚拟文本节点
  *
- * @author linwukang
+ * @author zero53
  */
 export default class VTextNode extends AbstractVNode {
     private readonly text: string
@@ -14,6 +14,10 @@ export default class VTextNode extends AbstractVNode {
         this.text = text
     }
 
+    /**
+     * 获取文本字符串
+     * @returns 返回文本的字符串
+     */
     getText(): string {
         return this.text
     }

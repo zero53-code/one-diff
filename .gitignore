@@ -1,19 +1,13 @@
-# 忽略node_modules目录
-node_modules/
-
-# 忽略Logs
+node_modules
 logs
 *.log
-
-# 忽略/dist目录，相对.gitignore文件所在目录
-/dist
-
-# 忽略.env文件
+build
+dist
 .env
 
-# 忽略IDE的配置文件
-.idea/
-.vscode/
+.idea
+.vscode
+.gitignore
 *.sw*
 
 push-to-github.bat

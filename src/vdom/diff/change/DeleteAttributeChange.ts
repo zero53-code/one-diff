@@ -3,7 +3,7 @@ import IChange from "./IChange";
 /**
  * 向目标元素删除属性
  *
- * @author linwukang
+ * @author zero53
  */
 export default class DeleteAttributeChange implements IChange {
     private readonly targetNode: HTMLElement

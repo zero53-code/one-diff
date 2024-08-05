@@ -1,5 +1,5 @@
 import IVNode from "./IVNode";
-import {KeyType} from "../util/KeyUtil";
+import {KeyType} from "../util/Key";
 
 import AbstractVElementNode from "./AbstractVElementNode";
 
@@ -7,7 +7,7 @@ import AbstractVElementNode from "./AbstractVElementNode";
  * 抽象 DOM 虚拟节点
  * 定义了通用的属性和方法
  *
- * @author linwukang
+ * @author zero53
  */
 export default abstract class AbstractVNode implements IVNode {
     /**

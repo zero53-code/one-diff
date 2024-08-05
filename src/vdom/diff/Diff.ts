@@ -1,11 +1,7 @@
-/**
- * @author linwukang
- */
-
 import VNode from "../vnode/VNode"
 import IChange from "./change/IChange"
 import { sameVNode } from "./SameVNode"
-import { KeyType } from "../util/KeyUtil"
+import { KeyType } from "../util/Key"
 import ReplaceNodeChange from "./change/ReplaceNodeChange"
 import ReplaceTextChange from "./change/ReplaceTextChange"
 import InsertBeforeChildChange from "./change/InsertBeforeChildChange"
@@ -44,7 +40,7 @@ export function* patch(newNode: IVNode, oldNode: IVNode): Generator<IChange> {
  * @param oldVNode 旧的虚拟节点。必须是已渲染的节点，即 `oldVNode.getNode()` 不为 `null`
  * @returns 序列 {@link Generator<IChange>}
  * 
- * @author linwukang
+ * @author zero53
  */
 export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Generator<IChange> {
     let oldNode = oldVNode.getNode() as HTMLElement
@@ -92,7 +88,7 @@ export function* propsPatch(newVNode: VElementNode, oldVNode: VElementNode): Gen
  * @param oldTextVNode 旧的虚拟文本节点。必须是已渲染的节点，即 `oldTextVNode.getNode()` 不为 `null`
  * @returns 序列 {@link Generator<IChange>}
  * 
- * @author linwukang
+ * @author zero53
  */
 export function* textNodePatch(newTextVNode: VTextNode, oldTextVNode: VTextNode): Generator<IChange> {
     if (newTextVNode.getText() === oldTextVNode.getText()) {
@@ -136,7 +132,7 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         }
         else if (sameVNode(newStartVNode, oldStartVNode)) {
             // 新前-旧前 命中
-            console.log("新前-旧前 命中")
+            // console.log("新前-旧前 命中")
             // console.log(newStartIdx, oldStartIdx);
             // console.log(newStartVNode, oldStartVNode);
 
@@ -147,7 +143,7 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         }
         else if (sameVNode(newEndVNode, oldEndVNode)) {
             // 新后-旧后 命中
-            console.log("新后-旧后 命中")
+            // console.log("新后-旧后 命中")
 
             yield* patch(newEndVNode, oldEndVNode)
 
@@ -156,7 +152,7 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         }
         else if (sameVNode(newStartVNode, oldEndVNode)) {
             // 新前-旧后 命中
-            console.log("新前-旧后 命中")
+            // console.log("新前-旧后 命中")
 
             yield new InsertBeforeChildChange(oldVNode, oldStartVNode, oldEndVNode)
             yield* patch(newStartVNode, oldEndVNode)
@@ -166,7 +162,7 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
         }
         else if (sameVNode(newEndVNode, oldStartVNode)) {
             // 新后-旧前 命中
-            console.log("新后-旧前 命中")
+            // console.log("新后-旧前 命中")
 
             yield new InsertAfterChildChange(oldVNode, oldEndVNode, oldStartVNode)
             yield* patch(newEndVNode, oldStartVNode)
@@ -175,7 +171,8 @@ export function* childNodePatch(newVNode: VElementNode, oldVNode: VElementNode):
             oldStartIdx++
         }
         else {
-            console.log("未命中")
+            // 未命中
+            // console.log("未命中")
 
             if (keyToOldIdx === undefined) {
                 keyToOldIdx = createKeyToOldIdx(oldChildren, oldStartIdx, oldEndIdx)

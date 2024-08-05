@@ -1,18 +1,18 @@
-import {h, renderTo} from "./lily/core/vdom/Render"
-import VNode from "./lily/core/vdom/vnode/VNode"
-import IChange from "./lily/core/vdom/diff/change/IChange"
-import {patch, propsPatch, textNodePatch} from "./lily/core/vdom/diff/Diff"
-import RemoveLastChildNodeChange from "./lily/core/vdom/diff/change/RemoveLastChildNodeChange";
-import RemoveFirstChildNodeChange from "./lily/core/vdom/diff/change/RemoveFirstChildNodeChange";
-import InsertBeforeChildChange from "./lily/core/vdom/diff/change/InsertBeforeChildChange";
-import InsertAfterChildChange from "./lily/core/vdom/diff/change/InsertAfterChildChange";
-import AbstractVElementNode from "./lily/core/vdom/vnode/AbstractVElementNode";
-import VElementNode from "./lily/core/vdom/vnode/VElementNode";
-import VTextNode from "./lily/core/vdom/vnode/VTextNode";
-import ProxyReactive from "./lily/core/reactive/ProxyReactive";
-import TypedEventEmitter from "./lily/core/event/TypedEventEmitter";
+import {h, renderTo} from "./vdom/Render"
+import VNode from "./vdom/vnode/VNode"
+import IChange from "./vdom/diff/change/IChange"
+import {patch, propsPatch, textNodePatch} from "./vdom/diff/Diff"
+import RemoveLastChildNodeChange from "./vdom/diff/change/RemoveLastChildNodeChange";
+import RemoveFirstChildNodeChange from "./vdom/diff/change/RemoveFirstChildNodeChange";
+import InsertBeforeChildChange from "./vdom/diff/change/InsertBeforeChildChange";
+import InsertAfterChildChange from "./vdom/diff/change/InsertAfterChildChange";
+import AbstractVElementNode from "./vdom/vnode/AbstractVElementNode";
+import VElementNode from "./vdom/vnode/VElementNode";
+import VTextNode from "./vdom/vnode/VTextNode";
+import ProxyReactive from "./reactive/ProxyReactive";
+import TypedEventEmitter from "./event/TypedEventEmitter";
+import Ref from "./reactive/Ref";
 import EventEmitter = require("events");
-import Ref from "./lily/core/reactive/Ref";
 
 // 测试 `VNode`
 function testVNode() {
@@ -481,15 +481,16 @@ function testRef() {
         console.log("ref.value: ", ref.value)
     }, 5000)
 }
+
 // testVNode()
 // testPropsPatch01()
 // testPropsPatch02()
 // testTextNodePatch()
 // testInsertNode()
 
-// testPatch01()
+testPatch01()
 // testPatch02()
 // testPatch03()
-testReactive01()
+// testReactive01()
 // testReactive02()
 // testRef()

@@ -4,7 +4,7 @@ import VElementNode from "../../vnode/VElementNode";
 /**
  * 移除最后一个子节点
  *
- * @author linwukang
+ * @author zero53
  */
 export default class RemoveLastChildNodeChange implements IChange {
     private readonly targetNode: HTMLElement

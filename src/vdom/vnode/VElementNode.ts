@@ -6,7 +6,7 @@ import VNode from "./VNode";
 /**
  * 虚拟 DOM 元素类
  *
- * @author linwukang
+ * @author zero53
  */
 export default class VElementNode extends AbstractVElementNode {
     private readonly tagName: string
@@ -29,13 +29,13 @@ export default class VElementNode extends AbstractVElementNode {
 
         this.tagName = tagName
         this.props = props
-        super.parentVNode = parentNode != undefined ? parentNode : null
+        this.parentVNode = parentNode != undefined ? parentNode : null
         this.childNodes = childNodes == undefined ? [] : childNodes
         this.node = null
 
         for (let propName in props) {
             if (propName === 'key') {
-                super.key = props[propName]
+                this.key = props[propName]
                 delete props.key
                 break
             }

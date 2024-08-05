@@ -1,14 +1,14 @@
 {
-  "name": "lily",
+  "name": "diff-ts",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "tsc --watch --project tsconfig.json",
     "build": "tsc && npx webpack --config webpack.config.js",
-    "test": "node ./test/indexTest.ts"
+    "test": "node ./src/index.ts"
   },
-  "author": "lwk",
+  "author": "zero53",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.2.0",
@@ -17,6 +17,7 @@
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
+    "diff-ts": "file:",
     "ts-loader": "^9.4.2",
     "webpack": "^5.82.1"
   }
