@@ -9,9 +9,6 @@ import InsertAfterChildChange from "./vdom/diff/change/InsertAfterChildChange";
 import AbstractVElementNode from "./vdom/vnode/AbstractVElementNode";
 import VElementNode from "./vdom/vnode/VElementNode";
 import VTextNode from "./vdom/vnode/VTextNode";
-import ProxyReactive from "./reactive/ProxyReactive";
-import TypedEventEmitter from "./event/TypedEventEmitter";
-import Ref from "./reactive/Ref";
 import EventEmitter = require("events");
 
 // 测试 `VNode`
@@ -405,81 +402,6 @@ function testPatch03() {
             clickButton()
         }
     )
-}
-
-function testReactive01() {
-    const reactive = new ProxyReactive(
-        {age: 13},
-        (o, prop, newValue, oldValue, receiver) => {
-            console.log("binding: ", o, prop, newValue, oldValue, receiver)
-        })
-
-    setTimeout(() => {
-        reactive.value.age++
-    }, 1000)
-    setTimeout(() => {
-        reactive.value.age++
-    }, 2000)
-    setTimeout(() => {
-        reactive.value.age++
-    }, 3000)
-    setTimeout(() => {
-        reactive.value.age++
-    }, 4000)
-    setTimeout(() => {
-        console.log("reactive.value", reactive.value)
-    }, 5000)
-}
-
-function testReactive02() {
-    const reactive = new ProxyReactive(
-        {age: 13},
-        (v) => {
-            console.log("binding 新值: ", v)
-        })
-
-    const eventEmitter = new EventEmitter()
-    eventEmitter.addListener(
-        "test",
-        (v: number) => {
-            reactive.listener("age", v)
-        })
-
-    setTimeout(() => {
-        eventEmitter.emit("test", 11)
-    }, 1000)
-    setTimeout(() => {
-        eventEmitter.emit("test", 14)
-    }, 2000)
-    setTimeout(() => {
-        eventEmitter.emit("test", 19)
-    }, 3000)
-
-    setTimeout(() => {
-        console.log("reactive.value", reactive.value)
-    }, 4000)
-}
-
-function testRef() {
-    const ref = new Ref<string>("h", (v) => {
-        console.log("binding: ", v)
-    })
-
-    setTimeout(() => {
-        ref.value = "e"
-    }, 1000)
-    setTimeout(() => {
-        ref.value = "l"
-    }, 2000)
-    setTimeout(() => {
-        ref.value = "l"
-    }, 3000)
-    setTimeout(() => {
-        ref.value = "o"
-    }, 4000)
-    setTimeout(() => {
-        console.log("ref.value: ", ref.value)
-    }, 5000)
 }
 
 // testVNode()
